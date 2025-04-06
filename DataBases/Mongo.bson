@@ -1,0 +1,312 @@
+// Colección Destino
+db.createCollection("destinos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["IdDestino"],
+      properties: {
+        IdDestino: { bsonType: "int" },
+        Ciudad: { bsonType: "string" },
+        Pais: { bsonType: "string" },
+        Aeropuerto: { bsonType: "string" },
+        CodigoIATA: { bsonType: "string" }
+      }
+    }
+  }
+});
+
+// Colección Nave
+db.createCollection("naves", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["IdNave", "Matricula"],
+      properties: {
+        IdNave: { bsonType: "int" },
+        Tipo: { bsonType: "string" },
+        CapacidadEjecutiva: { bsonType: "int" },
+        CapacidadTuristica: { bsonType: "int" },
+        Matricula: { bsonType: "string" },
+        UltimoVuelo: { bsonType: "long" },
+        HorasVueloTotal: { bsonType: "double" },
+        CiclosVuelo: { bsonType: "int" },
+        DistanciaTotal: { bsonType: "double" }
+      }
+    }
+  }
+});
+
+// Colección Ruta
+db.createCollection("rutas", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["IdRuta"],
+      properties: {
+        IdRuta: { bsonType: "int" },
+        CostoEjecutiva: { bsonType: "double" },
+        CostoTuristica: { bsonType: "double" },
+        OrigenID: { bsonType: "int" },
+        DestinoID: { bsonType: "int" }
+      }
+    }
+  }
+});
+
+// Colección Vuelo
+db.createCollection("vuelos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["IdVuelo", "CodigoVuelo"],
+      properties: {
+        IdVuelo: { bsonType: "int" },
+        FechaHoraSalida: { bsonType: "long" },
+        IdRuta: { bsonType: "int" },
+        IdNave: { bsonType: "int" },
+        CodigoVuelo: { bsonType: "string" },
+        EsInternacional: { bsonType: "bool" },
+        FechaHoraLlegada: { bsonType: "long" }
+      }
+    }
+  }
+});
+
+// Colección Pasajero
+db.createCollection("pasajeros", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["Pasaporte"],
+      properties: {
+        Pasaporte: { bsonType: "int" },
+        NombreCompleto: { bsonType: "string" }
+      }
+    }
+  }
+});
+
+// Colección Asiento
+db.createCollection("asientos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["IdAsiento", "IdVuelo", "Clase", "Estado"],
+      properties: {
+        IdAsiento: { bsonType: "int" },
+        IdVuelo: { bsonType: "int" },
+        NumeroAsiento: { bsonType: "string" },
+        Clase: { 
+          bsonType: "string",
+          enum: ["Turistica", "Ejecutiva"]
+        },
+        Estado: {
+          bsonType: "string",
+          enum: ["Devolucion", "Vendido", "Reservado", "Libre"]
+        },
+        UltimaActualizacion: { bsonType: "long" },
+        VectorClock: { bsonType: "object" }
+      }
+    }
+  }
+});
+
+// Colección HistorialAsiento
+db.createCollection("historial_asientos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["IdAsiento", "EstadoAnterior", "EstadoNuevo"],
+      properties: {
+        IdHistorial: { bsonType: "int" },
+        IdAsiento: { bsonType: "int" },
+        EstadoAnterior: { bsonType: "string" },
+        EstadoNuevo: { bsonType: "string" },
+        EpochCambio: { bsonType: "long" },
+        NodoOrigen: { bsonType: "int" }
+      }
+    }
+  }
+});
+
+// Colección Transaccion
+db.createCollection("transacciones", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["IdTransaccion", "IdAsiento", "Operacion"],
+      properties: {
+        IdTransaccion: { bsonType: "int" },
+        IdAsiento: { bsonType: "int" },
+        Pasaporte: { bsonType: "int" },
+        Operacion: {
+          bsonType: "string",
+          enum: ["Devolucion", "Anulacion", "Venta", "Reserva"]
+        },
+        FechaOperacion: { bsonType: "long" },
+        OrigenTransaccion: { bsonType: "string" },
+        VectorClock: { bsonType: "object" },
+        ServidorConectado: { bsonType: "int" }
+      }
+    }
+  }
+});
+
+
+
+
+src/
+├── mongo/
+│   ├── asiento/
+│   │   ├── dto/
+│   │   │   ├── create-asiento.ts
+│   │   │   └── update-asiento.ts
+│   │   ├── entities/
+│   │       └── asiento.entity.ts
+│   │   ├── asiento.controller.ts
+│   │   ├── asiento.module.ts
+│   │   └── asiento.service.ts
+│   ├── destino/
+│   │   ├── dto/
+│   │   │   ├── create-destino.ts
+│   │   │   └── update-destino.ts
+│   │   ├── entities/
+│   │       └── destino.entity.ts
+│   │   ├── destino.controller.ts
+│   │   ├── destino.module.ts
+│   │   └── destino.service.ts
+│   ├── historial-asiento/
+│   │   ├── dto/
+│   │   │   ├── create-historial-asiento.ts
+│   │   │   └── update-historial-asiento.ts
+│   │   ├── entities/
+│   │       └── historial-asiento.entity.ts
+│   │   ├── historial-asiento.controller.ts
+│   │   ├── historial-asiento.module.ts
+│   │   └── historial-asiento.service.ts
+│   ├── nave/
+│   │   ├── dto/
+│   │   │   ├── create-nave.ts
+│   │   │   └── update-nave.ts
+│   │   ├── entities/
+│   │       └── nave.entity.ts
+│   │   ├── nave.controller.ts
+│   │   ├── nave.module.ts
+│   │   └── nave.service.ts
+│   ├── pasajero/
+│   │   ├── dto/
+│   │   │   ├── create-pasajero.ts
+│   │   │   └── update-pasajero.ts
+│   │   ├── entities/
+│   │       └── pasajero.entity.ts
+│   │   ├── pasajero.controller.ts
+│   │   ├── pasajero.module.ts
+│   │   └── pasajero.service.ts
+│   ├── ruta/
+│   │   ├── dto/
+│   │   │   ├── create-ruta.ts
+│   │   │   └── update-ruta.ts
+│   │   ├── entities/
+│   │       └── ruta.entity.ts
+│   │   ├── ruta.controller.ts
+│   │   ├── ruta.module.ts
+│   │   └── ruta.service.ts
+│   ├── transaccion/
+│   │   ├── dto/
+│   │   │   ├── create-transaccion.ts
+│   │   │   └── update-transaccion.ts
+│   │   ├── entities/
+│   │       └── transaccion.entity.ts
+│   │   ├── transaccion.controller.ts
+│   │   ├── transaccion.module.ts
+│   │   └── transaccion.service.ts
+│   ├── vuelo/
+│   │   ├── dto/
+│   │   │   ├── create-vuelo.ts
+│   │   │   └── update-vuelo.ts
+│   │   ├── entities/
+│   │       └── vuelo.entity.ts
+│   │   ├── vuelo.controller.ts
+│   │   ├── vuelo.module.ts
+│   │   └── vuelo.service.ts
+│   └── mongo.module.ts
+├── mysql/
+│   ├── asiento/
+│   │   ├── dto/
+│   │   │   ├── create-asiento.ts
+│   │   │   └── update-asiento.ts
+│   │   ├── entities/
+│   │       └── asiento.entity.ts
+│   │   ├── asiento.controller.ts
+│   │   ├── asiento.module.ts
+│   │   └── asiento.service.ts
+│   ├── destino/
+│   │   ├── dto/
+│   │   │   ├── create-destino.ts
+│   │   │   └── update-destino.ts
+│   │   ├── entities/
+│   │       └── destino.entity.ts
+│   │   ├── destino.controller.ts
+│   │   ├── destino.module.ts
+│   │   └── destino.service.ts
+│   ├── historial-asiento/
+│   │   ├── dto/
+│   │   │   ├── create-historial-asiento.ts
+│   │   │   └── update-historial-asiento.ts
+│   │   ├── entities/
+│   │       └── historial-asiento.entity.ts
+│   │   ├── historial-asiento.controller.ts
+│   │   ├── historial-asiento.module.ts
+│   │   └── historial-asiento.service.ts
+│   ├── nave/
+│   │   ├── dto/
+│   │   │   ├── create-nave.ts
+│   │   │   └── update-nave.ts
+│   │   ├── entities/
+│   │       └── nave.entity.ts
+│   │   ├── nave.controller.ts
+│   │   ├── nave.module.ts
+│   │   └── nave.service.ts
+│   ├── pasajero/
+│   │   ├── dto/
+│   │   │   ├── create-pasajero.ts
+│   │   │   └── update-pasajero.ts
+│   │   ├── entities/
+│   │       └── pasajero.entity.ts
+│   │   ├── pasajero.controller.ts
+│   │   ├── pasajero.module.ts
+│   │   └── pasajero.service.ts
+│   ├── ruta/
+│   │   ├── dto/
+│   │   │   ├── create-ruta.ts
+│   │   │   └── update-ruta.ts
+│   │   ├── entities/
+│   │       └── ruta.entity.ts
+│   │   ├── ruta.controller.ts
+│   │   ├── ruta.module.ts
+│   │   └── ruta.service.ts
+│   ├── transaccion/
+│   │   ├── dto/
+│   │   │   ├── create-transaccion.ts
+│   │   │   └── update-transaccion.ts
+│   │   ├── entities/
+│   │       └── transaccion.entity.ts
+│   │   ├── transaccion.controller.ts
+│   │   ├── transaccion.module.ts
+│   │   └── transaccion.service.ts
+│   └── vuelo/
+│       ├── dto/
+│       │   ├── create-vuelo.ts
+│       │   └── update-vuelo.ts
+│       ├── entities/
+│           └── vuelo.entity.ts
+│       ├── vuelo.controller.ts
+│       ├── vuelo.module.ts
+│       └── vuelo.service.ts
+├── sync/
+│   ├── sync/
+│   │   ├── sync.gateway.ts
+│   │   └── sync.service.ts
+│   └── sync.module.ts
+├── app.module.ts
+└── main.ts
