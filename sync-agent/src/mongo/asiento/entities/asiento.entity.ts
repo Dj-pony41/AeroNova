@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({ timestamps: true }) // Opcional: `createdAt` y `updatedAt` automáticos
-export class Asiento extends Document {
+export class MongoAsiento extends Document {
   @Prop({ required: true, unique: true })
   idAsiento: number; // Equivalente a @PrimaryGeneratedColumn()
 
@@ -35,4 +35,4 @@ export class Asiento extends Document {
   // Nota: No se definen @OneToMany (se manejan en servicio)
 }
 
-export const AsientoSchema = SchemaFactory.createForClass(Asiento);
+export const AsientoSchema = SchemaFactory.createForClass(MongoAsiento);

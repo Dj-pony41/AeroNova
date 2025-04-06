@@ -307,6 +307,7 @@ src/
 │   ├── sync/
 │   │   ├── sync.gateway.ts
 │   │   └── sync.service.ts
-│   └── sync.module.ts
+│   │   sync.module.ts
+│   └── websocket.client.ts
 ├── app.module.ts
 └── main.ts

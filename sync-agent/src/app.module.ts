@@ -9,7 +9,6 @@ import { HistorialAsientoModule } from './mysql/historial-asiento/historial-asie
 import { TransaccionModule } from './mysql/transaccion/transaccion.module';
 import { SyncModule } from './sync/sync.module';
 import { MongoModule } from './mongo/mongo.module';
-
 @Module({
   imports: [DestinoModule, NaveModule, RutaModule, VueloModule, PasajeroModule, AsientoModule, HistorialAsientoModule, TransaccionModule, SyncModule, MongoModule],
 })
