@@ -2,6 +2,7 @@ import '../../../Styles/Aviones/AirbusA380/AirbusA380Style.css'
 import PrimeraClase from './PrimeraClase'
 import ClaseTurista from './ClaseTurista'
 import { useState } from 'react'
+import SegundoPiso from './SegundoPiso'
 
 const AirbusA380 = () => {
   const [piso, setPiso] = useState<'primero' | 'segundo'>('primero')
@@ -14,13 +15,18 @@ const AirbusA380 = () => {
       </div>
 
       <div className="airbus-layout">
-        <div className="ejecutiva">
-          <PrimeraClase />
-        </div>
-
-        <div className="turista">
-          <ClaseTurista piso={piso} />
-        </div>
+        {piso === 'primero' ? (
+          <>
+            <div className="ejecutiva">
+              <PrimeraClase />
+            </div>
+            <div className="turista">
+              <ClaseTurista piso="primero" />
+            </div>
+          </>
+        ) : (
+          <SegundoPiso />
+        )}
       </div>
     </div>
   )

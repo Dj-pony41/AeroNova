@@ -1,0 +1,93 @@
+.boeing7878-container-horizontal {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 40px;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #1e1e1e;
+    margin-top: 20px;
+  }
+  
+  .zona {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .zona-ejecutiva {
+    justify-content: center;
+  }
+  
+  .titulo-zona {
+    color: #f4c542;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .fila-con-letra {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  
+  .letra-fila {
+    width: 24px;
+    text-align: center;
+    color: #bbb;
+    font-weight: bold;
+  }
+  
+  .fila {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+  
+  .fila-centro {
+    justify-content: center;
+  }
+  
+  .numeros {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  
+  .numeros-centro {
+    justify-content: center;
+  }
+  
+  .numero {
+    width: 22px;
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+  }
+  
+  .numero.espaciado {
+    margin-left: 12px;
+  }
+  
+  .asiento {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+  }
+  
+  .asiento.turista {
+    background-color: #3fa9f5;
+  }
+  
+  .asiento.ejecutivo {
+    background-color: #6a5acd;
+  }
+  
+  .separator-bar {
+    width: 1px;
+    background-color: #444;
+    opacity: 0.6;
+  }
+  
