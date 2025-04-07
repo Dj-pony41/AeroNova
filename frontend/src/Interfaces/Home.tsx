@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../Styles/HomeStyle.css'
 import MapaAsientos from './MapaAsientos'
+import AirbusA380 from './Aviones/AirbusA380/AirbusA380'
 
 function App() {
     const [currentTime, setCurrentTime] = useState("")
@@ -64,7 +65,7 @@ function App() {
                     </option>
                 </select>
             </div>
-            <MapaAsientos totalAsientos={255} />
+            <AirbusA380></AirbusA380>
 
 
         </div>
