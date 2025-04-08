@@ -5,6 +5,9 @@ import { SyncModule } from './sync/sync.module';
 import { MongoRootModule } from './mongo/mongo-root.module';
 import { MysqlRootModule } from './mysql/mysql-root.module';
 
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 console.log('🧪 Tipo de base de datos:', process.env.DB_TYPE);
 
 @Module({
