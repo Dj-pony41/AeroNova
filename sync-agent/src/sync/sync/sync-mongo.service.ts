@@ -4,6 +4,10 @@ import { Model } from 'mongoose';
 import { MongoAsiento } from '../../mongo/asiento/entities/asiento.entity';
 import io from 'socket.io-client';
 
+
+
+
+
 @Injectable()
 export class SyncMongoService implements OnModuleInit {
   private readonly logger = new Logger(SyncMongoService.name);
@@ -20,7 +24,8 @@ export class SyncMongoService implements OnModuleInit {
   }
 
   private initWebSocket() {
-    this.socket = io(process.env.WS_SERVER_URL || 'http://localhost:3001', {
+    this.socket = io(process.env.WS_SERVER_URL || 'http://localhost:3001', 
+ {
       reconnection: true,
       reconnectionDelay: 5000,
       transports: ['websocket'],

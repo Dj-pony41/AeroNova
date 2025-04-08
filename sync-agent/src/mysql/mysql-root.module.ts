@@ -1,9 +1,9 @@
 // src/mysql/mysql-root.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-// Importa los módulos de tus entidades MySQL.
-// Asegúrate de que las rutas y nombres coincidan con tu estructura.
+// Importa tus módulos de dominio MySQL (ajusta las rutas según tu estructura)
 import { AsientoModule } from './asiento/asiento.module';
 import { DestinoModule } from './destino/destino.module';
 import { HistorialAsientoModule } from './historial-asiento/historial-asiento.module';
@@ -15,19 +15,22 @@ import { VueloModule } from './vuelo/vuelo.module';
 
 @Module({
   imports: [
-    // Configuración global de TypeORM para MySQL.
-    // Los valores se toman de variables de entorno.
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.MYSQL_HOST,
-      port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT, 10) : 3306,
-      username: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      autoLoadEntities: true,
-      synchronize: false, // Cambia a true solo en desarrollo (no en producción)
+    // Configuración global de TypeORM usando forRootAsync junto con ConfigService:
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule], // Asegúrate de importar ConfigModule
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('MYSQL_HOST'),
+        port: configService.get<number>('MYSQL_PORT', 3306), // Valor por defecto en caso de no encontrarlo
+        username: configService.get<string>('MYSQL_USER'),
+        password: configService.get<string>('MYSQL_PASSWORD'),
+        database: configService.get<string>('MYSQL_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: false, // Sólo en desarrollo; en producción desactívalo
+      }),
     }),
-    // Los módulos específicos del dominio MySQL
+    // Módulos de dominio MySQL:
     AsientoModule,
     DestinoModule,
     HistorialAsientoModule,
@@ -37,8 +40,6 @@ import { VueloModule } from './vuelo/vuelo.module';
     TransaccionModule,
     VueloModule,
   ],
-  exports: [
-    // Exporta lo que necesites que esté accesible a otros módulos
-  ],
+  exports: [],
 })
 export class MysqlRootModule {}
