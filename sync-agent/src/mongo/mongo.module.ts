@@ -1,29 +1,23 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 
-import { DestinoModule } from './destino/destino.module';
-import { AsientoModule } from './asiento/asiento.module';
-import { HistorialAsientoModule } from './historial-asiento/historial-asiento.module';
-import { NaveModule } from './nave/nave.module';
-import { PasajeroModule } from './pasajero/pasajero.module';
-import { RutaModule } from './ruta/ruta.module';
-import { TransaccionModule } from './transaccion/transaccion.module';
-import { VueloModule } from './vuelo/vuelo.module';
+const isMongo = process.env.DB_TYPE === 'mongodb';
 
 @Module({
-  imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/aeronovanongo'),
-
-    // Tus módulos de entidades
-    DestinoModule,
-    AsientoModule,
-    HistorialAsientoModule,
-    NaveModule,
-    PasajeroModule,
-    RutaModule,
-    TransaccionModule,
-    VueloModule
-  ],
-  exports: [MongooseModule],
+  imports: isMongo
+    ? [
+        require('@nestjs/mongoose').MongooseModule.forRoot(
+          process.env.MONGO_URI || 'mongodb://localhost:27017/aeronovanongo',
+        ),
+        require('./destino/destino.module').DestinoModule,
+        require('./asiento/asiento.module').AsientoModule,
+        require('./historial-asiento/historial-asiento.module').HistorialAsientoModule,
+        require('./nave/nave.module').NaveModule,
+        require('./pasajero/pasajero.module').PasajeroModule,
+        require('./ruta/ruta.module').RutaModule,
+        require('./transaccion/transaccion.module').TransaccionModule,
+        require('./vuelo/vuelo.module').VueloModule,
+      ]
+    : [],
+  exports: isMongo ? [require('@nestjs/mongoose').MongooseModule] : [],
 })
 export class MongoModule {}
