@@ -1,0 +1,15 @@
+.asiento.Libre {
+  background-color: #3fa9f5;
+}
+
+.asiento.Vendido {
+  background-color: #2ecc71 !important;
+}
+
+.asiento.Reservado {
+  background-color: #f39c12 !important;
+}
+
+.asiento.devolucion {
+  background-color: #e74c3c !important;
+}

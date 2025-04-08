@@ -87,4 +87,114 @@ body {
     color: white;
     font-size: 15px;
   }
+  /*----------servidores*/
+
+  .servers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.8rem;
+  }
+  
+  .server-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #ccc;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    background-color: #1e1f26;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .server-option img {
+    width: 24px;
+    margin-bottom: 0.2rem;
+  }
+  
+  .server-option.active {
+    background-color: #0c4f3c;
+    color: #00ff95;
+    position: relative;
+  }
+  
+  .server-option.active::after {
+    content: "";
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    width: 6px;
+    height: 6px;
+    background-color: #00ff95;
+    border-radius: 50%;
+  }
+
+  /*----------------------FOTER--------------------*/
+
+  .info-panel {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+
+  }
+  
+  .card {
+    background-color: #111826;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 350px;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    border: 1px solid #ffffff; /* ✅ Borde blanco */
+  }
+  
+  .card h4 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .estados-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem 2.5rem;
+  margin-bottom: 1rem;
+}
+.estado {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  padding-left: 0.2rem; /* Nuevo */
+}
+
+  
+  .estado .color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  
+  .color.libre { background: #18b6f6; }
+  .color.venta { background: #29c88a; }
+  .color.reserva { background: #f7a420; }
+  .color.devolucion { background: #e85050; }
+  .color.ejecutivo { background: #a583e2; }
+  .color.turista { background: #3faef9; }
+  
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+  
+  .subinfo {
+    font-size: 0.9rem;
+    color: #999;
+  }
   
