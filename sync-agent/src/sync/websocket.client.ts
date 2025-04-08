@@ -1,39 +1,41 @@
-// src/sync/websocket.client.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import io from 'socket.io-client';
 
 @Injectable()
-export class WebSocketClient {
-  public socket: any;
-  private _isConnected = false;
+export class WebSocketClient implements OnModuleInit {
+  private readonly logger = new Logger(WebSocketClient.name);
+  private sockets: Map<string, any> = new Map();
 
-  constructor() {
-    this.connect();
+  onModuleInit() {
+    const otherNodes = (process.env.OTHER_NODES || '').split(',');
+
+    for (const url of otherNodes) {
+      const socket = io(url.trim(), {
+        reconnection: true,
+        reconnectionDelay: 5000,
+        transports: ['websocket'],
+      });
+
+      socket.on('connect', () => {
+        this.logger.log(`✅ Conectado con ${url}`);
+        socket.emit('ping', { nodeId: process.env.NODE_ID });
+      });
+
+      socket.on('pong', (data: any) => {
+        this.logger.log(`📨 Pong recibido de ${data.from}`);
+      });
+
+      socket.on('connect_error', (err: any) => {
+        this.logger.warn(`❌ Error al conectar con ${url}: ${err.message}`);
+      });
+
+      this.sockets.set(url, socket);
+    }
   }
 
-  public get isConnected(): boolean {
-    return this._isConnected;
-  }
-
-
-  connect() {
-    this.socket = io('http://otros-nodos:3001', {
-      reconnection: true,
-      reconnectionDelay: 5000,
-    });
-
-    this.socket.on('connect', () => {
-      this._isConnected = true;
-    });
-
-    this.socket.on('disconnect', () => {
-      this._isConnected = false;
-    });
-  }
-
-  emit(event: string, payload: any) {
-    if (this.isConnected) {
-      this.socket.emit(event, payload);
+  emitToAll(event: string, payload: any) {
+    for (const socket of this.sockets.values()) {
+      socket.emit(event, payload);
     }
   }
 }
