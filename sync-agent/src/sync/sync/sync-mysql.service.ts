@@ -1,3 +1,4 @@
+// src/sync/sync/sync-mysql.service.ts
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Asiento } from '../../mysql/asiento/entities/asiento.entity';

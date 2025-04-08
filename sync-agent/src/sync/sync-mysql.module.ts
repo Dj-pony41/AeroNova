@@ -1,3 +1,4 @@
+// src/sync/sync-mysql.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyncGateway } from './sync/sync.gateway';

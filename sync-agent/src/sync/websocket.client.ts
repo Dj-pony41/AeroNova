@@ -1,3 +1,4 @@
+// src/sync/websocket.client.ts
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import io from 'socket.io-client';
 

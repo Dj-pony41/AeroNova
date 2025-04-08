@@ -1,3 +1,4 @@
+// src/sync/sync-mongo.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SyncGateway } from './sync/sync.gateway';

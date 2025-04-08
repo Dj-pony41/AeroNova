@@ -1,3 +1,4 @@
+// src/sync/sync/sync.getaway.ts
 import {
   WebSocketGateway,
   WebSocketServer,

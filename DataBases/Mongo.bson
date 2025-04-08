@@ -229,7 +229,7 @@ src/
 │   │   ├── vuelo.controller.ts
 │   │   ├── vuelo.module.ts
 │   │   └── vuelo.service.ts
-│   └── mongo.module.ts
+│   └── mongo-root.module.ts
 ├── mysql/
 │   ├── asiento/
 │   │   ├── dto/
@@ -294,20 +294,24 @@ src/
 │   │   ├── transaccion.controller.ts
 │   │   ├── transaccion.module.ts
 │   │   └── transaccion.service.ts
-│   └── vuelo/
-│       ├── dto/
-│       │   ├── create-vuelo.ts
-│       │   └── update-vuelo.ts
-│       ├── entities/
-│           └── vuelo.entity.ts
-│       ├── vuelo.controller.ts
-│       ├── vuelo.module.ts
-│       └── vuelo.service.ts
+│   ├── vuelo/
+│   │   ├── dto/
+│   │   │   ├── create-vuelo.ts
+│   │   │   └── update-vuelo.ts
+│   │   ├── entities/
+│   │       └── vuelo.entity.ts
+│   │   ├── vuelo.controller.ts
+│   │   ├── vuelo.module.ts
+│   │   └── vuelo.service.ts
+│   └── mysql-root.module.ts
 ├── sync/
 │   ├── sync/
-│   │   ├── sync.gateway.ts
-│   │   └── sync.service.ts
+│   │   ├── sync-mongo.service.ts
+│   │   ├── sync-mysql.service.ts
+│   │   └── sync.gateway.ts
 │   │   sync.module.ts
+│   ├── sync-mongo.module.ts
+│   ├── sync-mysql.module.ts
 │   └── websocket.client.ts
 ├── app.module.ts
 └── main.ts
