@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MongoRootModule } from './mongo-root.module';
 
 const isMongo = process.env.DB_TYPE === 'mongodb';
 
