@@ -17,30 +17,37 @@ export class AsientoService {
     return this.asientoModel.find().lean();
   }
 
-  async createOrUpdate(dto: CreateAsientoDto): Promise<MongoAsiento> {
-    const existing = await this.asientoModel.findOne({ idAsiento: dto.idAsiento });
+  async createOrUpdate(id: number, dto: CreateAsientoDto): Promise<MongoAsiento> {
+    dto.idAsiento = id;
+
+    const existing = await this.asientoModel.findOne({ idAsiento: id });
 
     const localNode = process.env.NODE_ID || 'nodo_mongo';
-    const newClock = existing?.vectorClock || { nodo1: 0, nodo2: 0, nodo3: 0 };
-    newClock[localNode] = (newClock[localNode] || 0) + 1;
+    const oldClock = existing?.vectorClock || {
+      nodo_mysql_1: 0,
+      nodo_mysql_2: 0,
+      nodo_mongo: 0,
+    };
+
+    oldClock[localNode] = (oldClock[localNode] || 0) + 1;
 
     const asiento = {
       ...dto,
-      vectorClock: newClock,
+      vectorClock: oldClock,
       ultimaActualizacion: Date.now(),
     };
 
     await this.asientoModel.updateOne(
-      { idAsiento: dto.idAsiento },
+      { idAsiento: id },
       { $set: asiento },
-      { upsert: true },
+      { upsert: true }
     );
 
     this.wsClient.emitToAll('sync_data', {
       table: 'asientos',
       action: existing ? 'UPDATE' : 'INSERT',
       data: asiento,
-      vectorClock: newClock,
+      vectorClock: oldClock,
       nodoOrigen: localNode,
     });
 

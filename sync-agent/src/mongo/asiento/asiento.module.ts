@@ -8,7 +8,7 @@ import { WebSocketClient } from '../../sync/websocket.client';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: MongoAsiento.name, schema: AsientoSchema },
+      { name: MongoAsiento.name, schema: AsientoSchema, collection: 'asientos' },
     ]),
   ],
   controllers: [AsientoController],
