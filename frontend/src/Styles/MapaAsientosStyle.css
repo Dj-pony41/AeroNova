@@ -1,0 +1,78 @@
+.mapa-contenedor {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    text-align: center;
+  }
+  
+  .iconos-wc {
+    font-size: 20px;
+    margin: 8px 0;
+  }
+  
+  .fila-con-letra {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    gap: 6px;
+  }
+  
+  .letra-fila {
+    width: 24px;
+    text-align: center;
+    font-weight: bold;
+    color: #b0b0b0;
+  }
+  
+  .fila {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .asiento {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+  
+  .asiento.disponible {
+    background-color: #3fa9f5;
+  }
+  
+  .asiento.reservado {
+    background-color: #f5a623;
+    cursor: not-allowed;
+  }
+  
+  .asiento.ocupado {
+    background-color: #d9534f;
+    cursor: not-allowed;
+  }
+  
+  .asiento.seleccionado {
+    background-color: #5cb85c;
+  }
+  
+  .numeros {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    gap: 6px;
+  }
+  
+  .numero {
+    width: 22px;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+  }
+  
+  .espacio-wc {
+    width: 24px;
+  }
+  

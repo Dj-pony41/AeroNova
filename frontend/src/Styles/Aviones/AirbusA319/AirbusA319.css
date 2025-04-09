@@ -1,0 +1,121 @@
+.a319-container-horizontal {
+  background-color: #111826 !important;
+  border: 1px solid #1f2a38;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 30px;
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  align-items: stretch;
+  /* 🔑 clave para que la barra crezca */
+}
+
+.zona {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.titulo-zona {
+  color: #f4c542;
+  margin-bottom: 10px;
+}
+
+.fila-con-letra {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  gap: 6px;
+}
+
+.letra-fila {
+  width: 24px;
+  text-align: center;
+  color: #bbb;
+  font-weight: bold;
+}
+
+.fila {
+  display: flex;
+  gap: 4px;
+}
+
+.fila-centro {
+  justify-content: center;
+}
+
+.numeros {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.numeros-centro {
+  justify-content: center;
+}
+
+.numero {
+  width: 22px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+.asiento {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+}
+
+.asiento.turista {
+  background-color: #3fa9f5;
+}
+
+.asiento.ejecutivo {
+  background-color: #6a5acd;
+}
+
+.separator-bar {
+  width: 1px;
+  background-color: #888;
+  /* un gris más visible */
+  opacity: 0.5;
+}
+
+.pasillo-horizontal {
+  width: 20px;
+}
+
+.numero {
+  width: 22px;
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+}
+
+.numero.espaciado {
+  margin-left: 16px;
+  /* crea la separación entre bloques visuales */
+}
+
+.a319-container-horizontal {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 40px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #1e1e1e;
+}
+
+.zona {
+  display: flex;
+  flex-direction: column;
+}
+
+.zona-ejecutiva {
+  justify-content: center;
+  /* 🟨 Esto centra verticalmente el bloque */
+}
