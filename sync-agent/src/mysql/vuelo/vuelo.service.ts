@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { CreateVueloDto } from './dto/create-vuelo.dto';
-import { UpdateVueloDto } from './dto/update-vuelo.dto';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class VueloService {
-  create(createVueloDto: CreateVueloDto) {
-    return 'This action adds a new vuelo';
-  }
+  constructor(private dataSource: DataSource) {}
 
-  findAll() {
-    return `This action returns all vuelo`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} vuelo`;
-  }
-
-  update(id: number, updateVueloDto: UpdateVueloDto) {
-    return `This action updates a #${id} vuelo`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} vuelo`;
+  async obtenerResumenAsientos() {
+    return this.dataSource.query(`
+      SELECT 
+          v.IdVuelo,
+          v.CodigoVuelo,
+          n.Matricula,
+          a.Clase,
+          a.Estado,
+          COUNT(*) AS CantidadAsientos
+      FROM vuelo v
+      JOIN nave n ON v.IdNave = n.IdNave
+      JOIN asiento a ON v.IdVuelo = a.IdVuelo
+      GROUP BY v.IdVuelo, v.CodigoVuelo, n.Matricula, a.Clase, a.Estado
+      ORDER BY v.IdVuelo, a.Clase, a.Estado;
+    `);
   }
 }
