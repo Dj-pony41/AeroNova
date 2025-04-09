@@ -27,9 +27,9 @@ DROP TABLE IF EXISTS `asiento`;
 CREATE TABLE `asiento` (
   `IdAsiento` int NOT NULL,
   `IdVuelo` int DEFAULT NULL,
-  `NumeroAsiento` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Clase` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Estado` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NumeroAsiento` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Clase` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Estado` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `UltimaActualizacion` bigint DEFAULT NULL,
   `VectorClock` json DEFAULT NULL,
   PRIMARY KEY (`IdAsiento`),
@@ -46,7 +46,7 @@ CREATE TABLE `asiento` (
 
 LOCK TABLES `asiento` WRITE;
 /*!40000 ALTER TABLE `asiento` DISABLE KEYS */;
-INSERT INTO `asiento` VALUES (1,1,'A1','Ejecutiva','Libre',1743992305000,'{\"nodo1\": 0, \"nodo2\": 0, \"nodo3\": 0}'),(2,1,'B3','Turistica','Libre',1743992305000,'{\"nodo1\": 0, \"nodo2\": 0, \"nodo3\": 0}');
+INSERT INTO `asiento` VALUES (1,1,'A1','Ejecutiva','Libre',1743992305000,'{\"nodo_mongo\": 0, \"nodo_mysql_1\": 0, \"nodo_mysql_2\": 0}'),(2,1,'B3','Turistica','Libre',1712600000000,'{\"nodo_mongo\": 7, \"nodo_mysql_1\": 1, \"nodo_mysql_2\": 0}');
 /*!40000 ALTER TABLE `asiento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,10 +59,10 @@ DROP TABLE IF EXISTS `destino`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `destino` (
   `IdDestino` int NOT NULL,
-  `Ciudad` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Pais` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Aeropuerto` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `CodigoIATA` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Ciudad` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Pais` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Aeropuerto` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `CodigoIATA` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`IdDestino`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -87,8 +87,8 @@ DROP TABLE IF EXISTS `historialasiento`;
 CREATE TABLE `historialasiento` (
   `IdHistorial` int NOT NULL AUTO_INCREMENT,
   `IdAsiento` int DEFAULT NULL,
-  `EstadoAnterior` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `EstadoNuevo` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `EstadoAnterior` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `EstadoNuevo` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `EpochCambio` bigint DEFAULT NULL,
   `NodoOrigen` int DEFAULT NULL,
   PRIMARY KEY (`IdHistorial`),
@@ -116,10 +116,10 @@ DROP TABLE IF EXISTS `nave`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nave` (
   `IdNave` int NOT NULL,
-  `Tipo` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tipo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `CapacidadEjecutiva` int DEFAULT NULL,
   `CapacidadTuristica` int DEFAULT NULL,
-  `Matricula` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Matricula` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `UltimoVuelo` bigint DEFAULT NULL,
   `HorasVueloTotal` decimal(10,2) DEFAULT NULL,
   `CiclosVuelo` int DEFAULT NULL,
@@ -148,7 +148,7 @@ DROP TABLE IF EXISTS `pasajero`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pasajero` (
   `Pasaporte` int NOT NULL,
-  `NombreCompleto` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NombreCompleto` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`Pasaporte`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -205,9 +205,9 @@ CREATE TABLE `transaccion` (
   `IdTransaccion` int NOT NULL,
   `IdAsiento` int DEFAULT NULL,
   `Pasaporte` int DEFAULT NULL,
-  `Operacion` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Operacion` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `FechaOperacion` bigint DEFAULT NULL,
-  `OrigenTransaccion` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `OrigenTransaccion` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `VectorClock` json DEFAULT NULL,
   `ServidorConectado` int DEFAULT NULL,
   PRIMARY KEY (`IdTransaccion`),
@@ -225,7 +225,7 @@ CREATE TABLE `transaccion` (
 
 LOCK TABLES `transaccion` WRITE;
 /*!40000 ALTER TABLE `transaccion` DISABLE KEYS */;
-INSERT INTO `transaccion` VALUES (1,1,12345678,'Reserva',1743992314000,'nodo1','{\"nodo1\": 1, \"nodo2\": 0, \"nodo3\": 0}',1),(2,1,23456789,'Venta',1743992315000,'nodo2','{\"nodo1\": 0, \"nodo2\": 1, \"nodo3\": 0}',2);
+INSERT INTO `transaccion` VALUES (1,1,12345678,'Reserva',1743992314000,'nodo1','{\"nodo_mongo\": 0, \"nodo_mysql_1\": 1, \"nodo_mysql_2\": 0}',1),(2,1,23456789,'Venta',1743992315000,'nodo2','{\"nodo_mongo\": 0, \"nodo_mysql_1\": 0, \"nodo_mysql_2\": 1}',2);
 /*!40000 ALTER TABLE `transaccion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -241,7 +241,7 @@ CREATE TABLE `vuelo` (
   `FechaHoraSalida` bigint DEFAULT NULL,
   `IdRuta` int DEFAULT NULL,
   `IdNave` int DEFAULT NULL,
-  `CodigoVuelo` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `CodigoVuelo` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `EsInternacional` tinyint(1) DEFAULT NULL,
   `FechaHoraLlegada` bigint DEFAULT NULL,
   PRIMARY KEY (`IdVuelo`),
@@ -280,4 +280,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-07 14:38:03
+-- Dump completed on 2025-04-09 10:45:02
