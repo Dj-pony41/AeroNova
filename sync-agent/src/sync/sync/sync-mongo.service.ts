@@ -60,19 +60,18 @@ export class SyncMongoService implements OnModuleInit {
     vectorClock: Record<string, number>;
     nodoOrigen: string;
   }): Promise<void> {
-    this.logger.log(`📥 Iniciando handleSync para tabla ${payload.table}`);
-
     const { table, action, data, vectorClock, nodoOrigen } = payload;
-
+  
     const isNewer = await this.isDataNewer(table, data.idAsiento || data.id, vectorClock);
     if (!isNewer) {
       this.logger.warn(`🔄 Dato obsoleto de ${nodoOrigen}. Ignorando...`);
       return;
     }
-
+  
     await this.applyLocalChanges(table, action, data, vectorClock);
     this.logger.log(`🔄 Sincronizado ${table} desde ${nodoOrigen}`);
   }
+  
 
   // ==================== VECTOR CLOCK COMPARISON ====================
   private async isDataNewer(
@@ -105,22 +104,23 @@ export class SyncMongoService implements OnModuleInit {
     data: any,
     vectorClock: Record<string, number>,
   ): Promise<void> {
-    this.logger.log(`🛠 Aplicando ${action} en ${table}:`, data);
-
     const entity = { ...data, vectorClock };
-
+  
     if (table === 'asientos') {
       if (action === 'DELETE') {
         await this.asientoMongoModel.deleteOne({ idAsiento: entity.idAsiento });
+        this.logger.log(`❌ Eliminado asiento con id ${entity.idAsiento}`);
       } else {
         await this.asientoMongoModel.updateOne(
           { idAsiento: entity.idAsiento },
           { $set: entity },
           { upsert: true },
         );
+        this.logger.log(`🛠 Actualizado/inserto asiento con id ${entity.idAsiento}`);
       }
     }
   }
+  
 
   private async getLocalMongoData(table: string, id: number): Promise<any> {
     if (table === 'asientos') {
