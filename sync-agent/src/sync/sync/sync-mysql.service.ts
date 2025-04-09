@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Asiento } from '../../mysql/asiento/entities/asiento.entity';
 import { Repository } from 'typeorm';
 import { AsientoService } from '../../mysql/asiento/asiento.service';
+import { PasajeroService } from 'src/mysql/pasajero/pasajero.service';
 import io from 'socket.io-client';
 
 import Long from 'long';
@@ -16,6 +17,7 @@ export class SyncMysqlService implements OnModuleInit {
     @InjectRepository(Asiento)
     private asientoMySQLRepo: Repository<Asiento>,
     private readonly asientoService: AsientoService,
+    private readonly pasajeroService: PasajeroService,
   ) {}
 
   onModuleInit() {
@@ -82,6 +84,14 @@ export class SyncMysqlService implements OnModuleInit {
         this.logger.log(`🔄 Sincronizado asientos desde ${nodoOrigen}`);
       } catch (error) {
         this.logger.error(`❌ Error al sincronizar asiento:`, error);
+      }
+    }
+    if (table === 'pasajeros') {
+      try {
+        await this.pasajeroService.syncUpsert(data);
+        this.logger.log(`🔄 Sincronizado pasajero desde ${nodoOrigen}`);
+      } catch (err) {
+        this.logger.error('❌ Error sincronizando pasajero:', err);
       }
     }
   

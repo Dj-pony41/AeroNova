@@ -1,6 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import io from 'socket.io-client';
 import { AsientoService } from 'src/mongo/asiento/asiento.service';
+import { PasajeroService } from 'src/mongo/pasajero/pasajero.service';
+
 
 @Injectable()
 export class SyncMongoService implements OnModuleInit {
@@ -9,6 +11,7 @@ export class SyncMongoService implements OnModuleInit {
 
   constructor(
     private readonly asientoService: AsientoService,
+    private readonly pasajeroService: PasajeroService,
   ) {}
 
   onModuleInit() {
@@ -63,6 +66,16 @@ export class SyncMongoService implements OnModuleInit {
         }
 
         this.logger.log(`🔄 Sincronizado ${table} desde ${nodoOrigen}`);
+      }
+
+      if (table === 'pasajeros') {
+        try {
+          const { pasaporte, ...rest } = data;
+          await this.pasajeroService.createOrUpdate(pasaporte, rest);
+          this.logger.log(`🧾 Pasajero ${pasaporte} sincronizado desde ${nodoOrigen}`);
+        } catch (error) {
+          this.logger.error(`❌ Error al sincronizar pasajero:`, error);
+        }
       }
 
       // 👇 Aquí puedes agregar más tablas fácilmente

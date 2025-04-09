@@ -1,5 +1,12 @@
 // src/mongo/pasajero/dto/update-pasajero.dto.ts
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePasajeroDto } from './create-pasajero.dto';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
-export class UpdatePasajeroDto extends PartialType(CreatePasajeroDto) {}
+export class UpdatePasajeroDto {
+  @IsOptional()
+  @IsInt()
+  pasaporte?: number;
+
+  @IsOptional()
+  @IsString()
+  nombreCompleto?: string;
+}

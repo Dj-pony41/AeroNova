@@ -1,34 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Put, Body, ParseIntPipe } from '@nestjs/common';
 import { PasajeroService } from './pasajero.service';
 import { CreatePasajeroDto } from './dto/create-pasajero.dto';
-import { UpdatePasajeroDto } from './dto/update-pasajero.dto';
 
-@Controller('pasajero')
+@Controller('pasajeros')
 export class PasajeroController {
   constructor(private readonly pasajeroService: PasajeroService) {}
-
-  @Post()
-  create(@Body() createPasajeroDto: CreatePasajeroDto) {
-    return this.pasajeroService.create(createPasajeroDto);
-  }
 
   @Get()
   findAll() {
     return this.pasajeroService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pasajeroService.findOne(+id);
+  @Get(':pasaporte')
+  findOne(@Param('pasaporte', ParseIntPipe) pasaporte: number) {
+    return this.pasajeroService.findByPasaporte(pasaporte);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePasajeroDto: UpdatePasajeroDto) {
-    return this.pasajeroService.update(+id, updatePasajeroDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pasajeroService.remove(+id);
+  @Put(':pasaporte')
+  async upsert(
+    @Param('pasaporte', ParseIntPipe) pasaporte: number,
+    @Body() dto: CreatePasajeroDto,
+  ) {
+    const pasajero = await this.pasajeroService.upsert(pasaporte, dto);
+    return {
+      message: '✅ Pasajero insertado/actualizado y sincronizado.',
+      data: pasajero,
+    };
   }
 }

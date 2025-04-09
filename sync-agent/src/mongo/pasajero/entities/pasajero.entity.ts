@@ -2,15 +2,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ timestamps: true })
-export class Pasajero extends Document {
-  @Prop({ required: true, unique: true })
-  pasaporte: number; // @PrimaryColumn() → @Prop({ unique: true })
+export type MongoPasajeroDocument = MongoPasajero & Document;
 
-  @Prop({ required: true, maxlength: 100 })
+@Schema({ collection: 'pasajeros' }) // 👈 Usamos colección existente
+export class MongoPasajero {
+  @Prop({ required: true })
+  pasaporte: number;
+
+  @Prop({ required: true })
   nombreCompleto: string;
-
-  // Nota: No se define @OneToMany (las transacciones referenciarán este pasaporte)
 }
 
-export const PasajeroSchema = SchemaFactory.createForClass(Pasajero);
+export const PasajeroSchema = SchemaFactory.createForClass(MongoPasajero);
