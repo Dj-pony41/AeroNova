@@ -45,9 +45,10 @@ export class SyncMongoService implements OnModuleInit {
     });
 
     this.socket.on('sync_data', async (payload: any) => {
-      this.logger.log('📥 Evento sync_data recibido:', payload); // <== AÑADE ESTO
+      console.log('📥 Evento sync_data recibido en Mongo:', JSON.stringify(payload, null, 2));
       await this.handleSync(payload);
     });
+    
     
   }
 
