@@ -114,7 +114,7 @@ export class SyncMongoService implements OnModuleInit {
         await this.asientoMongoModel.updateOne(
           { idAsiento: entity.idAsiento },
           { $set: entity },
-          { upsert: true },
+          { upsert: true }
         );
         this.logger.log(`🛠 Actualizado/inserto asiento con id ${entity.idAsiento}`);
       }
