@@ -1,38 +1,28 @@
-// src/mongo/asiento/entities/asiento.entity.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ timestamps: true }) // Opcional: `createdAt` y `updatedAt` automáticos
+@Schema({ collection: 'asientos' })
 export class MongoAsiento extends Document {
-  @Prop({ required: true, unique: true })
-  idAsiento: number; // Equivalente a @PrimaryGeneratedColumn()
+  @Prop({ required: true })
+  idAsiento: number;
+
+  @Prop({ required: true })
+  vueloId: number;
 
   @Prop({ required: true })
   numeroAsiento: string;
 
-  @Prop({ 
-    required: true,
-    enum: ['Ejecutiva', 'Turistica'] // Reemplaza @IsIn del DTO
-  })
+  @Prop({ required: true, enum: ['Ejecutiva', 'Turistica'] })
   clase: string;
 
-  @Prop({
-    required: true,
-    enum: ['Libre', 'Reservado', 'Vendido', 'Devolucion']
-  })
+  @Prop({ required: true, enum: ['Libre', 'Reservado', 'Vendido', 'Devolucion'] })
   estado: string;
 
   @Prop()
-  ultimaActualizacion?: number;
+  ultimaActualizacion: number;
 
-  @Prop({ type: Object }) // MongoDB guarda objetos nativamente (no necesita ser string)
-  vectorClock?: Record<string, number>; // Cambiamos de string a objeto
-
-  // Relaciones (en MongoDB se manejan por referencia, no hay joins físicos)
-  @Prop({ required: true })
-  vueloId: number; // Referencia al ID del vuelo
-
-  // Nota: No se definen @OneToMany (se manejan en servicio)
+  @Prop({ type: Object })
+  vectorClock: Record<string, number>;
 }
 
 export const AsientoSchema = SchemaFactory.createForClass(MongoAsiento);

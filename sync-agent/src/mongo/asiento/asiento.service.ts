@@ -18,7 +18,7 @@ export class AsientoService {
   }
 
   async createOrUpdate(dto: CreateAsientoDto): Promise<MongoAsiento> {
-    const existing = await this.asientoModel.findOne({ IdAsiento: dto.idAsiento });
+    const existing = await this.asientoModel.findOne({ idAsiento: dto.idAsiento });
 
     const localNode = process.env.NODE_ID || 'nodo_mongo';
     const newClock = existing?.vectorClock || { nodo1: 0, nodo2: 0, nodo3: 0 };
@@ -31,7 +31,7 @@ export class AsientoService {
     };
 
     await this.asientoModel.updateOne(
-      { IdAsiento: dto.idAsiento },
+      { idAsiento: dto.idAsiento },
       { $set: asiento },
       { upsert: true },
     );
