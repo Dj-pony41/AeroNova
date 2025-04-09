@@ -9,6 +9,9 @@ import { Long } from 'bson';
 
 @Injectable()
 export class AsientoService {
+  delete(idAsiento: any) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @InjectModel(MongoAsiento.name)
     private asientoModel: Model<MongoAsiento>,
@@ -18,6 +21,25 @@ export class AsientoService {
   async findAll(): Promise<MongoAsiento[]> {
     return this.asientoModel.find().lean();
   }
+  async syncUpdate(id: number, dto: UpdateAsientoDto): Promise<MongoAsiento> {
+    const existing = await this.asientoModel.findOne({ idAsiento: id }).lean();
+  
+    const asiento = {
+      ...(existing || { idAsiento: id }),
+      ...dto,
+      ultimaActualizacion: dto.ultimaActualizacion,
+      vectorClock: dto.vectorClock,
+    };
+  
+    await this.asientoModel.updateOne(
+      { idAsiento: id },
+      { $set: asiento },
+      { upsert: true }
+    );
+  
+    return asiento as any;
+  }
+  
 
   async createOrUpdate(id: number, dto: UpdateAsientoDto): Promise<MongoAsiento> {
     dto.idAsiento = id;
