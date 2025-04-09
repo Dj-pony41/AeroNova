@@ -59,6 +59,8 @@ export class SyncMongoService implements OnModuleInit {
     vectorClock: Record<string, number>;
     nodoOrigen: string;
   }): Promise<void> {
+    this.logger.log(`📥 Iniciando handleSync para tabla ${payload.table}`);
+
     const { table, action, data, vectorClock, nodoOrigen } = payload;
 
     const isNewer = await this.isDataNewer(table, data.idAsiento || data.id, vectorClock);
@@ -102,6 +104,8 @@ export class SyncMongoService implements OnModuleInit {
     data: any,
     vectorClock: Record<string, number>,
   ): Promise<void> {
+    this.logger.log(`🛠 Aplicando ${action} en ${table}:`, data);
+
     const entity = { ...data, vectorClock };
 
     if (table === 'asientos') {

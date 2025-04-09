@@ -1,13 +1,6 @@
 // src/sync/websocket.client.ts
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import io from 'socket.io-client';
-
-
-
-
-
-
-
 @Injectable()
 export class WebSocketClient implements OnModuleInit {
   private readonly logger = new Logger(WebSocketClient.name);
@@ -41,8 +34,10 @@ export class WebSocketClient implements OnModuleInit {
   }
 
   emitToAll(event: string, payload: any) {
-    for (const socket of this.sockets.values()) {
+    for (const [url, socket] of this.sockets.entries()) {
       socket.emit(event, payload);
+      console.log(`➡️ Emitido a ${url}`);
     }
   }
+  
 }
