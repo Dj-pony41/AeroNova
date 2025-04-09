@@ -16,6 +16,9 @@ function Home() {
     const [location, setLocation] = useState("Bogotá, Colombia")
     const [selectedFlight, setSelectedFlight] = useState("B-101")
 
+    
+
+
     const flights = [
         { code: "B-101", route: "Ucrania(Kiev) - Bolivia(Cochabamba) 18:55 20/Abr/2024", aircraft: "A380" },
         { code: "B-202", route: "Argentina(Buenos Aires) - Perú(Lima) 14:30 22/Abr/2024", aircraft: "A319" },

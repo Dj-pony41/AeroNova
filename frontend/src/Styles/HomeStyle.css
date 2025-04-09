@@ -149,7 +149,7 @@ body {
     width: 350px;
     color: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    border: 1px solid #ffffff; /* ✅ Borde blanco */
+    border: 1px solid #1f2a38; /* ✅ Borde blanco */
   }
   
   .card h4 {

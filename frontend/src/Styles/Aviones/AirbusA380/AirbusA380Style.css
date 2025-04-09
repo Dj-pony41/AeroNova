@@ -1,9 +1,10 @@
 .airbus-container {
     background-color: #111826;
+    border: 1px solid #1f2a38;
     padding: 20px;
     border-radius: 12px;
     margin-top: 30px;
-    border: 1px solid #ffffff; /* ✅ Borde blanco */
+    
   }
   
   .airbus-tabs {

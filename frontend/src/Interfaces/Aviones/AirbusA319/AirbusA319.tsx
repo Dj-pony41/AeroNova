@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react'
 import '../../../Styles/Aviones/AirbusA319/AirbusA319.css'
 import { simularAsientos, Asiento } from '../../../utils/simuladorAsientos'
 import '../../../Styles/estadosAsientos.css'
+import ReservadoModal from '../../../utils/ReservadoModal' // ajusta si tu ruta es distinta
 
+
+type AsientoSeleccionado = {
+  id: string;
+  estado: string;
+  precio: number;
+} | null;
 
 
 const AirbusA319 = () => {
@@ -10,8 +17,10 @@ const AirbusA319 = () => {
   const grupoSuperior = ['A', 'B', 'C']
   const grupoInferior = ['D', 'E', 'F']
   const totalAsientos = 150
-  const [asientos, setAsientos] = useState<Asiento[]>([])
 
+  const [asientos, setAsientos] = useState<Asiento[]>([])
+  const [modalVisible, setModalVisible] = useState(false)
+  const [asientoSeleccionado, setAsientoSeleccionado] = useState<AsientoSeleccionado>(null)
 
   useEffect(() => {
     setAsientos(simularAsientos(totalAsientos))
@@ -21,6 +30,17 @@ const AirbusA319 = () => {
     const id = `${letra}${numero}`
     return asientos.find(a => a.id === id)?.estado || 'libre'
   }
+
+  const handleClickAsiento = (letra: string, numero: number, tipo: string) => {
+    const id = `${letra}${numero}`;
+    const estado = obtenerEstado(letra, numero);
+    if (estado === 'libre') return;
+  
+    const precio = tipo === 'ejecutivo' ? 400 : 200;
+    setAsientoSeleccionado({ id, estado, precio }); // ahora sí, todo está correcto
+    setModalVisible(true);
+  };
+  
 
   const renderEjecutiva = () => (
     <div className="zona primera-clase">
@@ -36,9 +56,8 @@ const AirbusA319 = () => {
                   key={i}
                   className={`asiento ejecutivo ${estado}`}
                   title={`Ejecutiva - ${letra}${i + 1} (${estado})`}
-                  onClick={() => console.log(`${letra}${i + 1}(${estado})`)}
+                  onClick={() => handleClickAsiento(letra, i + 1, 'ejecutivo')}
                 />
-
               )
             })}
           </div>
@@ -68,6 +87,7 @@ const AirbusA319 = () => {
                   key={i}
                   className={`asiento turista ${estado}`}
                   title={`Turista - ${letra}${i + 1} (${estado})`}
+                  onClick={() => handleClickAsiento(letra, i + 1, 'turista')}
                 />
               )
             })}
@@ -99,6 +119,7 @@ const AirbusA319 = () => {
                   key={i}
                   className={`asiento turista ${estado}`}
                   title={`Turista - ${letra}${i + 1} (${estado})`}
+                  onClick={() => handleClickAsiento(letra, i + 1, 'turista')}
                 />
               )
             })}
@@ -110,11 +131,15 @@ const AirbusA319 = () => {
   )
 
   return (
-    <div className="a319-container-horizontal">
-      <div className="zona zona-ejecutiva">{renderEjecutiva()}</div>
-      <div className="separator-bar" />
-      <div className="zona zona-turista">{renderTurista()}</div>
-    </div>
+    <>
+      <div className="a319-container-horizontal">
+        <div className="zona zona-ejecutiva">{renderEjecutiva()}</div>
+        <div className="separator-bar" />
+        <div className="zona zona-turista">{renderTurista()}</div>
+      </div>
+
+      <ReservadoModal visible={modalVisible} onClose={() => setModalVisible(false)} asiento={asientoSeleccionado} />
+    </>
   )
 }
 

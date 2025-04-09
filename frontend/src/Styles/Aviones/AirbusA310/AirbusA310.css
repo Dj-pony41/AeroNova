@@ -5,8 +5,9 @@
     gap: 40px;
     padding: 20px;
     border-radius: 12px;
-    background-color: #1e1e1e;
+    background-color: #111826;
     margin-top: 20px;
+    border: 1px solid #1f2a38; /* ✅ Borde blanco */
   }
   
   .zona {

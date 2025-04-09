@@ -1,3 +1,4 @@
+// src/Components/ReservaModal.tsx
 import '../Styles/ReservadoModal.css'
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
   } | null
 }
 
-const ReservadoModal = ({ visible, onClose, asiento }: Props) => {
+const ReservaModal = ({ visible, onClose, asiento }: Props) => {
   if (!visible || !asiento) return null
 
   return (
@@ -22,15 +23,13 @@ const ReservadoModal = ({ visible, onClose, asiento }: Props) => {
         </div>
 
         <div className="modal-body">
-          <div className={`estado-color ${asiento.estado}`} />
+          <div className="estado-color reserva" />
           <p><strong>Asiento:</strong> {asiento.id}</p>
-          <p><strong>Estado:</strong> {asiento.estado.charAt(0).toUpperCase() + asiento.estado.slice(1)}</p>
+          <p><strong>Estado:</strong> Reservado</p>
           <p><strong>Precio:</strong> ${asiento.precio}</p>
 
           <div className="icono-info">ℹ️</div>
-          <h2 className="titulo-estado">
-            {asiento.estado.toUpperCase()}
-          </h2>
+          <h2 className="titulo-estado">RESERVADO</h2>
           <p className="descripcion">Este asiento ya ha sido reservado por otro pasajero</p>
 
           <button className="btn-aceptar" onClick={onClose}>Aceptar</button>
@@ -40,4 +39,4 @@ const ReservadoModal = ({ visible, onClose, asiento }: Props) => {
   )
 }
 
-export default ReservadoModal
+export default ReservaModal

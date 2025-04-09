@@ -1,94 +1,89 @@
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .modal {
-    background-color: #0f172a;
-    border-radius: 8px;
-    width: 280px;
-    padding: 16px;
-    color: #fff;
-    font-family: sans-serif;
-    box-shadow: 0 0 10px #000;
-    position: relative;
-  }
-  
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    border-bottom: 1px solid #1f2937;
-    padding-bottom: 8px;
-  }
-  
-  .close-button {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-  }
-  
-  .modal-body {
-    text-align: center;
-    padding-top: 16px;
-  }
-  
-  .estado-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 2px;
-    display: inline-block;
-    margin-bottom: 8px;
-  }
-  
-  .estado-color.reserva { background-color: #f39c12; }
-  .estado-color.venta { background-color: #2ecc71; }
-  .estado-color.libre { background-color: #3fa9f5; }
-  
-  .icono-info {
-    font-size: 30px;
-    background-color: #1e293b;
-    width: 40px;
-    height: 40px;
-    margin: 12px auto;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #f39c12;
-  }
-  
-  .titulo-estado {
-    color: #f39c12;
-    margin: 0;
-    font-weight: bold;
-    font-size: 18px;
-  }
-  
-  .descripcion {
-    font-size: 14px;
-    color: #cbd5e1;
-    margin-top: 6px;
-  }
-  
-  .btn-aceptar {
-    background-color: #1e293b;
-    color: #fff;
-    padding: 6px 16px;
-    border: none;
-    border-radius: 6px;
-    margin-top: 16px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal {
+  background: #0f172a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 320px;
+  color: white;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  border: 1px solid #333;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  text-align: center;
+}
+
+.estado-color {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+}
+
+.estado-color.reserva {
+  background-color: #f7a420;
+}
+
+.icono-info {
+  background: #2a2a2a;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #f7a420;
+  margin: 1rem auto;
+}
+
+.titulo-estado {
+  color: #f7a420;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.descripcion {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.btn-aceptar {
+  margin-top: 1.2rem;
+  background-color: #1f2937;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
