@@ -77,12 +77,21 @@ export class SyncMongoService implements OnModuleInit {
   ): Promise<boolean> {
     const localData = await this.getLocalMongoData(table, id);
     if (!localData) return true;
-
+  
     const localClock = localData.vectorClock || {};
-    return Object.keys(remoteClock).every(
-      node => (remoteClock[node] || 0) >= (localClock[node] || 0),
+  
+    const isNewer = Object.keys(remoteClock).every(
+      node => (remoteClock[node] || 0) >= (localClock[node] || 0)
     );
+  
+    this.logger.debug(`Comparando vector clocks:`);
+    this.logger.debug(`Remoto: ${JSON.stringify(remoteClock)}`);
+    this.logger.debug(`Local : ${JSON.stringify(localClock)}`);
+    this.logger.debug(`¿Aplicar cambios?: ${isNewer}`);
+  
+    return isNewer;
   }
+  
 
   // ==================== DB OPERATIONS ====================
   private async applyLocalChanges(
