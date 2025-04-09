@@ -11,6 +11,8 @@ import servidorIcon from '../assets/servidor.png'
 import DevolucionModal from '../utils/DevolucionModal'
 import SeleccionAsientoModal from '../utils/SeleccionAsientoModal'
 
+import axios from 'axios';
+
 import paises from '../assets/paises.json' // Asegúrate de tenerlo en JSON
 import { paisesConZona } from '../utils/paisesConZona.ts';
 // Home.tsx
@@ -77,15 +79,29 @@ function Home() {
         setPaisesCiudades(paises);
     }, [])
 
-    const flights = [
-        { code: "B-101", route: "Ucrania(Kiev) - Bolivia(Cochabamba) 18:55 20/Abr/2024", aircraft: "A380" },
-        { code: "B-202", route: "Argentina(Buenos Aires) - Perú(Lima) 14:30 22/Abr/2024", aircraft: "A319" },
-        { code: "B-303", route: "México(CDMX) - Colombia(Bogotá) 10:15 25/Abr/2024", aircraft: "737" },
-        { code: "B-404", route: "Brasil(Rio) - Ecuador(Quito) 11:00 26/Abr/2024", aircraft: "A310" },
-        { code: "B-505", route: "España(Madrid) - Chile(Santiago) 17:40 27/Abr/2024", aircraft: "787" },
-        { code: "B-606", route: "Francia(París) - Panamá(Ciudad) 08:20 29/Abr/2024", aircraft: "A330" },
-    ]
-
+    interface Flight {
+        code: string;
+        route: string;
+        aircraft: string;
+      }
+      const [flights, setFlights] = useState<Flight[]>([]);
+      const MyComponent = () => {
+        const [flights, setFlights] = useState<Flight[]>([]);
+      
+        useEffect(() => {
+          axios.get<Flight[]>('http://localhost:3250/vuelos/resumen')
+            .then(res => setFlights(res.data))
+            .catch(err => console.error(err));
+        }, []);
+      
+        return (
+          <ul>
+            {flights.map((f, i) => (
+              <li key={i}>{f.code} - {f.route} - {f.aircraft}</li>
+            ))}
+          </ul>
+        );
+      };
     useEffect(() => {
         const actualizarHora = () => {
             const seleccionado = paisesConZona.find(
