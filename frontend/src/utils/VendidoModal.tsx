@@ -1,5 +1,4 @@
-// src/Components/ReservaModal.tsx
-import '../Styles/ReservadoModal.css'
+import '../Styles/VendidoModal.css'
 
 interface Props {
   visible: boolean
@@ -11,7 +10,7 @@ interface Props {
   } | null
 }
 
-const ReservaModal = ({ visible, onClose, asiento }: Props) => {
+const VendidoModal = ({ visible, onClose, asiento }: Props) => {
   if (!visible || !asiento) return null
 
   return (
@@ -24,27 +23,24 @@ const ReservaModal = ({ visible, onClose, asiento }: Props) => {
 
         <div className="modal-body">
           <div className="info-asiento">
-            <div className="estado-color reservado" />
+            <div className="estado-color vendido" />
             <div className="asiento-detalle">
               <p><strong>Asiento:</strong> {asiento.id}</p>
-              <p className="estado"><strong>Estado:</strong> Reservado</p>
-              <p className="precio"><strong>Precio:</strong> ${asiento.precio}</p>
+              <p className="estado"><strong>Estado:</strong> Vendido</p>
+              <p className="preciovendido"><strong>Precio:</strong> ${asiento.precio}</p>
             </div>
           </div>
 
-          <div className="icono-info reservado">ℹ️</div>
-          <h2 className="titulo-estado reservado">RESERVADO</h2>
-          <p className="descripcion reservado">Este asiento ya ha sido reservado por otro pasajero</p>
+          <div className="icono-info vendido">ℹ️</div>
+          <h2 className="titulo-estado vendido">VENDIDO</h2>
+          <p className="descripcion vendido">Este asiento ya ha sido comprado por otro pasajero</p>
 
-          <button className="btn-aceptar1" onClick={onClose}>Aceptar</button>
+          <button className="btn-aceptar2" onClick={onClose}>Aceptar</button>
         </div>
-
-
-
 
       </div>
     </div>
   )
 }
 
-export default ReservaModal
+export default VendidoModal

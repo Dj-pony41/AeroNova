@@ -1,32 +1,38 @@
 // utils/simuladorAsientos.ts
 
-export type EstadoAsiento = "Libre" | "Vendido" | "Reservado"
+export type EstadoAsiento = "Libre" | "Vendido" | "Reservado" | "Devolucion";
 
 export interface Asiento {
   id: string
   estado: EstadoAsiento
 }
 
-export function simularAsientos(cantidad: number): Asiento[] {
-  const asientos: Asiento[] = []
-  const vendidos = Math.floor(cantidad * (Math.random() * 0.2 + 0.4)) // 40% a 60%
-  const reservados = Math.floor(cantidad * (Math.random() * 0.2 + 0.1)) // 10% a 30%
-  const libres = cantidad - vendidos - reservados
+export function simularAsientos(filas: string[], columnas: number): Asiento[] {
+  const total = filas.length * columnas
+
+  const vendidos = Math.floor(total * (Math.random() * 0.2 + 0.4)) // 40% a 60%
+  const reservados = Math.floor(total * (Math.random() * 0.2 + 0.1)) // 10% a 30%
+  const libres = total - vendidos - reservados
 
   const estados: EstadoAsiento[] = [
     ...Array(vendidos).fill("Vendido"),
     ...Array(reservados).fill("Reservado"),
     ...Array(libres).fill("Libre"),
+    
   ]
 
-  // Mezclamos los estados
-  estados.sort(() => Math.random() - 0.5)
+  estados.sort(() => Math.random() - 0.5) // Mezclar
 
-  for (let i = 0; i < cantidad; i++) {
-    asientos.push({
-      id: `A${i + 1}`,
-      estado: estados[i],
-    })
+  const asientos: Asiento[] = []
+  let index = 0
+
+  for (const fila of filas) {
+    for (let col = 1; col <= columnas; col++) {
+      asientos.push({
+        id: `${fila}${col}`,
+        estado: estados[index++],
+      })
+    }
   }
 
   return asientos

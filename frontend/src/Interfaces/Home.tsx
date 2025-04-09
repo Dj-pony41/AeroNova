@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import '../Styles/HomeStyle.css'
 
 import AirbusA380 from './Aviones/AirbusA380/AirbusA380'
@@ -8,7 +8,18 @@ import AirbusA310 from './Aviones/AirbusA310/AirbusA310'
 import Boeing7878 from './Aviones/Boeing7878/Boeing7878'
 import AirbusA330neo from './Aviones/AirbusA330neo/AirbusA330neo'
 import servidorIcon from '../assets/servidor.png'
+import DevolucionModal from '../utils/DevolucionModal'
+import SeleccionAsientoModal from '../utils/SeleccionAsientoModal'
 
+
+type AsientoCompra = {
+    id: string;
+    pasajero: string;
+    pasaporte: string;
+    precio: number;
+    estado: 'Vendido' | 'Reservado';
+    enProcesoDeDevolucion?: boolean; // ← nueva propiedad
+};
 
 
 function Home() {
@@ -16,7 +27,22 @@ function Home() {
     const [location, setLocation] = useState("Bogotá, Colombia")
     const [selectedFlight, setSelectedFlight] = useState("B-101")
 
-    
+    const [asientosComprados, setAsientosComprados] = useState<AsientoCompra[]>([]);
+
+    const [asientoADevolver, setAsientoADevolver] = useState<AsientoCompra | null>(null);
+
+    const [devolucionModalVisible, setDevolucionModalVisible] = useState(false);
+
+    const avionRef = useRef<any>(null);
+    const actualizarEstadoTemporal = (id: string, nuevoEstado: string) => {
+        if (avionRef.current && typeof avionRef.current.actualizarEstadoAsiento === 'function') {
+            avionRef.current.actualizarEstadoAsiento(id, nuevoEstado);
+        }
+    };
+
+    const [modalCompraVisible, setModalCompraVisible] = useState(false);
+    const [asientoAComprar, setAsientoAComprar] = useState<AsientoCompra | null>(null);
+
 
 
     const flights = [
@@ -47,6 +73,16 @@ function Home() {
         const interval = setInterval(updateTime, 1000)
         return () => clearInterval(interval)
     }, [])
+
+    const registrarCompra = (id: string, pasajero: string, pasaporte: string, precio: number) => {
+        setAsientosComprados((prev) => [...prev, { id, pasajero, pasaporte, precio, estado: 'Vendido' }]);
+    };
+
+    const registrarReserva = (id: string, pasajero: string, pasaporte: string, precio: number) => {
+        setAsientosComprados((prev) => [...prev, { id, pasajero, pasaporte, precio, estado: 'Reservado' }]);
+    };
+
+
 
     return (
         <div className="container">
@@ -81,8 +117,6 @@ function Home() {
                         <span>Mongo</span>
                     </div>
                 </div>
-
-
                 <div className="datetime">
                     <label>Fecha y hora actual</label>
                     <p>{currentTime}</p>
@@ -106,7 +140,13 @@ function Home() {
 
             {/* Render del avión seleccionado */}
             {selectedFlight === "B-101" && <AirbusA380 />}
-            {selectedFlight === "B-202" && <AirbusA319 />}
+            {selectedFlight === "B-202" && (
+                <AirbusA319
+                    ref={avionRef}
+                    onCompra={registrarCompra}
+                    onReservar={registrarReserva}
+                />
+            )}
             {selectedFlight === "B-303" && <Boeing737900ER />}
             {selectedFlight === "B-404" && <AirbusA310 />}
             {selectedFlight === "B-505" && <Boeing7878 />}
@@ -147,7 +187,6 @@ function Home() {
                     </div>
                 </div>
 
-
                 {/* Información de vuelo */}
                 <div className="card vuelo">
                     <h4>Información de vuelo</h4>
@@ -172,10 +211,137 @@ function Home() {
                         </div>
                     </div>
                 </div>
-            </div>
 
+                {asientosComprados.length > 0 && (
+                    <div className="card compras">
+                        <h4>Mis asientos comprados</h4>
+                        <div className="lista-compras">
+                            {asientosComprados.map((a, idx) => (
+                                <div className="asiento-compra" key={idx}>
+                                    <div className="detalle">
+                                        {/* Estado-color dinámico */}
+                                        <div className="id-linea">
+                                            <span className={`estado-color ${a.estado.toLowerCase()}`} />
+                                            <span className={`id ${a.estado.toLowerCase()}`}>{a.id}</span>
+                                        </div>
+
+                                        <span className="nombre">{a.pasajero}</span>
+                                        <span className="pasaporte">Pasaporte: {a.pasaporte}</span>
+                                        <span className={`precio ${a.estado.toLowerCase()}`}>
+                                            ${a.precio}
+                                        </span>
+                                    </div>
+                                    {a.enProcesoDeDevolucion && (
+                                        <div className="barra-devolucion">
+                                            <div className="barra-progreso" />
+                                        </div>
+                                    )}
+                                    {/* Solo mostrar el botón si el asiento está reservado */}
+                                    {a.estado === "Reservado" && (
+                                        <>
+                                            <button
+                                                className="devolver-btn"
+                                                onClick={() => {
+                                                    setAsientoADevolver(a);
+                                                    setDevolucionModalVisible(true);
+                                                }}
+                                            >
+                                                ↻
+                                            </button>
+
+                                            <button
+                                                className="comprar-btn"
+                                                onClick={() => {
+                                                    // Guardamos el asiento que vamos a confirmar compra
+                                                    setAsientoAComprar(a);
+                                                    setModalCompraVisible(true);
+                                                }}
+                                            >
+                                                💳Comprar
+                                            </button>
+                                        </>
+                                    )}
+
+
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="total">
+                            <strong>Total:</strong>{" "}
+                            <span style={{ color: "#3bdf93" }}>
+                                ${asientosComprados.reduce((acc, a) => acc + a.precio, 0)}
+                            </span>
+                        </div>
+                    </div>
+
+                )}
+                {devolucionModalVisible && asientoADevolver && (
+                    <DevolucionModal
+                        visible={devolucionModalVisible}
+                        asiento={asientoADevolver}
+                        onClose={() => setDevolucionModalVisible(false)}
+                        onConfirm={() => {
+                            if (!asientoADevolver) return;
+
+                            // 1️⃣ Muestra la barra de devolución (estado visual)
+                            setAsientosComprados(prev =>
+                                prev.map(a =>
+                                    a.id === asientoADevolver.id
+                                        ? { ...a, enProcesoDeDevolucion: true }
+                                        : a
+                                )
+                            );
+
+                            // 2️⃣ Oculta el modal
+                            setDevolucionModalVisible(false);
+
+                            // 3️⃣ Cambia a estado "Devolución" cuando inicia la barra
+                            actualizarEstadoTemporal(asientoADevolver.id, "Devolucion");
+
+                            // 4️⃣ Espera 5 segundos y luego cambia a "Libre" y elimina del panel
+                            setTimeout(() => {
+                                actualizarEstadoTemporal(asientoADevolver.id, "Libre");
+
+                                setAsientosComprados(prev =>
+                                    prev.filter(a => a.id !== asientoADevolver.id)
+                                );
+
+                                setAsientoADevolver(null);
+                            }, 5000);
+                        }}
+                    />
+                )}
+                {modalCompraVisible && asientoAComprar && (
+                    <SeleccionAsientoModal
+                        visible={modalCompraVisible}
+                        onClose={() => setModalCompraVisible(false)}
+                        asiento={{
+                            id: asientoAComprar.id,
+                            estado: 'Reservado', // puede estar como vendido también si se desea protegerlo
+                            precio: asientoAComprar.precio,
+                        }}
+                        onComprar={() => {
+                            // Cambiar estado a Vendido visualmente
+                            actualizarEstadoTemporal(asientoAComprar.id, "Vendido");
+
+                            // Actualizar el array de asientos comprados
+                            setAsientosComprados(prev =>
+                                prev.map(a =>
+                                    a.id === asientoAComprar.id
+                                        ? { ...a, estado: "Vendido" }
+                                        : a
+                                )
+                            );
+
+                            setModalCompraVisible(false);
+                        }}
+                        onReservar={() => { }} // no es necesario usar en este caso
+                    />
+                )}
+
+            </div>
         </div>
     )
 }
-
 export default Home

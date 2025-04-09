@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { forwardRef, useImperativeHandle, useEffect, useState } from 'react';
 import '../../../Styles/Aviones/AirbusA319/AirbusA319.css'
-import { simularAsientos, Asiento } from '../../../utils/simuladorAsientos'
+import { simularAsientos, Asiento, EstadoAsiento } from '../../../utils/simuladorAsientos'
 import '../../../Styles/estadosAsientos.css'
-import ReservadoModal from '../../../utils/ReservadoModal' // ajusta si tu ruta es distinta
-
+import ReservadoModal from '../../../utils/ReservadoModal'
+import VendidoModal from '../../../utils/VendidoModal'
+import SeleccionAsientoModal from '../../../utils/SeleccionAsientoModal'
 
 type AsientoSeleccionado = {
   id: string;
@@ -11,20 +12,38 @@ type AsientoSeleccionado = {
   precio: number;
 } | null;
 
+export interface RefAvion {
+  actualizarEstadoAsiento: (id: string, nuevoEstado: EstadoAsiento) => void;
+}
 
-const AirbusA319 = () => {
+interface Props {
+  onCompra: (id: string, pasajero: string, pasaporte: string, precio: number) => void;
+  onReservar: (id: string, pasajero: string, pasaporte: string, precio: number) => void;
+}
+
+export default forwardRef<RefAvion, Props>(({ onCompra, onReservar }, ref) => {
   const filasEjecutiva = ['A', 'B', 'C']
   const grupoSuperior = ['A', 'B', 'C']
   const grupoInferior = ['D', 'E', 'F']
-  const totalAsientos = 150
 
   const [asientos, setAsientos] = useState<Asiento[]>([])
-  const [modalVisible, setModalVisible] = useState(false)
-  const [asientoSeleccionado, setAsientoSeleccionado] = useState<AsientoSeleccionado>(null)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tipoModal, setTipoModal] = useState<'' | 'reservado' | 'vendido' | 'seleccion'>('');
+  const [asientoSeleccionado, setAsientoSeleccionado] = useState<AsientoSeleccionado>(null);
 
   useEffect(() => {
-    setAsientos(simularAsientos(totalAsientos))
+    const letras = ['A', 'B', 'C', 'D', 'E', 'F']
+    const columnas = 20
+    setAsientos(simularAsientos(letras, columnas))
   }, [])
+
+  useImperativeHandle(ref, () => ({
+    actualizarEstadoAsiento(id: string, nuevoEstado: EstadoAsiento) {
+      setAsientos(prev =>
+        prev.map(a => a.id === id ? { ...a, estado: nuevoEstado } : a)
+      );
+    },
+  }));
 
   const obtenerEstado = (letra: string, numero: number): string => {
     const id = `${letra}${numero}`
@@ -34,13 +53,52 @@ const AirbusA319 = () => {
   const handleClickAsiento = (letra: string, numero: number, tipo: string) => {
     const id = `${letra}${numero}`;
     const estado = obtenerEstado(letra, numero);
-    if (estado === 'libre') return;
-  
     const precio = tipo === 'ejecutivo' ? 400 : 200;
-    setAsientoSeleccionado({ id, estado, precio }); // ahora sí, todo está correcto
-    setModalVisible(true);
+
+    setModalVisible(false);
+    setTipoModal('');
+    setAsientoSeleccionado(null);
+
+    setTimeout(() => {
+      const nuevoAsiento = { id, estado, precio };
+      setAsientoSeleccionado(nuevoAsiento);
+
+      if (estado === 'Reservado') {
+        setTipoModal('reservado');
+      } else if (estado === 'Vendido') {
+        setTipoModal('vendido');
+      } else if (estado === 'Libre') {
+        setTipoModal('seleccion');
+      }
+
+      setModalVisible(true);
+    }, 10);
   };
-  
+
+  const actualizarEstadoAsiento = (nuevoEstado: "Vendido" | "Reservado") => {
+    if (!asientoSeleccionado) return;
+
+    const nuevos = asientos.map(a =>
+      a.id === asientoSeleccionado.id ? { ...a, estado: nuevoEstado } : a
+    );
+    setAsientos(nuevos);
+    setModalVisible(false);
+    setAsientoSeleccionado(null);
+  };
+
+  const handleCompra = (pasajero: string, pasaporte: string) => {
+    if (!asientoSeleccionado) return;
+    actualizarEstadoAsiento("Vendido");
+    onCompra(asientoSeleccionado.id, pasajero, pasaporte, asientoSeleccionado.precio);
+    setModalVisible(false);
+  };
+
+  const handleReserva = (pasajero: string, pasaporte: string) => {
+    if (!asientoSeleccionado) return;
+    actualizarEstadoAsiento("Reservado");
+    onReservar(asientoSeleccionado.id, pasajero, pasaporte, asientoSeleccionado.precio);
+    setModalVisible(false);
+  };
 
   const renderEjecutiva = () => (
     <div className="zona primera-clase">
@@ -138,9 +196,26 @@ const AirbusA319 = () => {
         <div className="zona zona-turista">{renderTurista()}</div>
       </div>
 
-      <ReservadoModal visible={modalVisible} onClose={() => setModalVisible(false)} asiento={asientoSeleccionado} />
+      <ReservadoModal
+        visible={modalVisible && tipoModal === 'reservado'}
+        onClose={() => setModalVisible(false)}
+        asiento={asientoSeleccionado}
+      />
+
+      <VendidoModal
+        visible={modalVisible && tipoModal === 'vendido'}
+        onClose={() => setModalVisible(false)}
+        asiento={asientoSeleccionado}
+      />
+
+      <SeleccionAsientoModal
+        visible={modalVisible && tipoModal === 'seleccion'}
+        onClose={() => setModalVisible(false)}
+        asiento={asientoSeleccionado}
+        onComprar={handleCompra}
+        onReservar={handleReserva}
+      />
     </>
   )
-}
+});
 
-export default AirbusA319

@@ -197,4 +197,135 @@ body {
     font-size: 0.9rem;
     color: #999;
   }
-  
+  /*estilos pa el card 3 de histoiral de asientos compraso*/
+
+
+  .card.compras {
+    max-height: 340px;
+    overflow-y: auto;
+  }
+  .lista-compras {
+    margin-top: 1rem;
+  }
+  .asiento-compra {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #0e1625;
+    padding: 0.6rem;
+    border-radius: 6px;
+    margin-bottom: 0.6rem;
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  }
+  .asiento-compra .detalle {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2px;
+  }
+  .asiento-compra .id {
+    font-weight: bold;
+    color: #3bdf93;
+  }
+  .asiento-compra .nombre {
+    font-size: 0.9rem;
+  }
+  .asiento-compra .pasaporte {
+    font-size: 0.8rem;
+    color: #888;
+  }
+  .asiento-compra .precio {
+    font-weight: bold;
+    color: #3bdf93;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  .devolver-btn {
+    background: #5b0f2f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+  }
+  .total {
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    text-align: right;
+  }
+  /* Colores dinámicos para el precio */
+.precio.vendido {
+  color: #3bdf93; /* Verde */
+}
+
+.precio.reservado {
+  color: #f7a420; /* Amarillo */
+}
+
+/* Cuadro de color de estado */
+.estado-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+/* Colores para el icono */
+.estado-color.vendido {
+  background-color: #29c88a ;
+}
+
+.estado-color.reservado {
+  background-color: #f7a420;
+}
+.id-linea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+/* Colores del número de asiento (ID) */
+.id.vendido {
+  color: #3bdf93;
+}
+
+.id.reservado {
+  color: #f7a420;
+}
+.asiento-compra .nombre,
+.asiento-compra .pasaporte {
+  font-size: 0.9rem;
+}
+
+/*ESTILOS PARA LA BARRA DE CARGA*/
+
+
+.barra-devolucion {
+  width: 100%;
+  height: 6px;
+  background: #2e2e2e;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.barra-progreso {
+  height: 100%;
+  background: #f84848;
+  animation: progresoDevolucion 5s linear forwards;
+}
+
+@keyframes progresoDevolucion {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.comprar-btn {
+  background: #1f8f4a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.3rem 0.5rem;
+  margin-left: 0.4rem;
+  cursor: pointer;
+}
