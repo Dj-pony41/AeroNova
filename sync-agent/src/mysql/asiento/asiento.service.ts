@@ -70,4 +70,27 @@ export class AsientoService {
     await this.asientoRepo.update({ idAsiento: id }, data);
     return data;
   }
+
+  async updateAsiento(id: number, updateDto: UpdateAsientoDto): Promise<Asiento> {
+    // Encuentra el asiento existente
+    const asiento = await this.asientoRepo.findOne({ where: { idAsiento: id } });
+    if (!asiento) {
+      throw new NotFoundException(`Asiento con id ${id} no encontrado.`);
+    }
+    
+    // Actualiza los campos; por ejemplo, puedes usar Object.assign:
+    Object.assign(asiento, updateDto);
+    
+    // Guarda el resultado
+    const updated = await this.asientoRepo.save(asiento);
+    return updated;
+  }
+  async createAsiento(createDto: CreateAsientoDto) {
+    return this.asientoRepo.save(createDto);
+  }
+  
+  async deleteAsiento(id: number) {
+    return this.asientoRepo.delete({ idAsiento: id });
+  }
+  
 }

@@ -1,13 +1,11 @@
-// src/sync/sync/sync-mysql.service.ts
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Asiento } from '../../mysql/asiento/entities/asiento.entity';
 import { Repository } from 'typeorm';
+import { AsientoService } from '../../mysql/asiento/asiento.service';
 import io from 'socket.io-client';
 
-
-
-
+import Long from 'long';
 
 @Injectable()
 export class SyncMysqlService implements OnModuleInit {
@@ -17,6 +15,7 @@ export class SyncMysqlService implements OnModuleInit {
   constructor(
     @InjectRepository(Asiento)
     private asientoMySQLRepo: Repository<Asiento>,
+    private readonly asientoService: AsientoService,
   ) {}
 
   onModuleInit() {
@@ -24,8 +23,7 @@ export class SyncMysqlService implements OnModuleInit {
   }
 
   private initWebSocket() {
-    this.socket = io(process.env.WS_SERVER_URL || 'http://localhost:3001', 
- {
+    this.socket = io(process.env.WS_SERVER_URL || 'http://localhost:3001', {
       reconnection: true,
       reconnectionDelay: 5000,
       transports: ['websocket'],
@@ -48,17 +46,46 @@ export class SyncMysqlService implements OnModuleInit {
     });
   }
 
-  async handleSync(payload: any) {
+  async handleSync(payload: {
+    table: string;
+    action: 'INSERT' | 'UPDATE' | 'DELETE';
+    data: any;
+    vectorClock: Record<string, number>;
+    nodoOrigen: string;
+  }): Promise<void> {
     const { table, action, data, vectorClock, nodoOrigen } = payload;
-
-    const isNewer = await this.isDataNewer(table, data.idAsiento || data.id, vectorClock);
-    if (!isNewer) {
-      this.logger.warn(`🔄 Dato obsoleto de ${nodoOrigen}. Ignorando...`);
-      return;
+  
+    if (table === 'asientos') {
+      try {
+        // Eliminar _id si viene de MongoDB
+        if ('_id' in data) delete data._id;
+  
+        // Asegurarse de que el vectorClock esté presente
+        data.vectorClock = vectorClock;
+  
+        // 🛠️ Convertir objeto Long de MongoDB a número si es necesario
+        if (typeof data.ultimaActualizacion === 'object' && 'low' in data.ultimaActualizacion && 'high' in data.ultimaActualizacion) {
+          data.ultimaActualizacion = Long.fromBits(
+            data.ultimaActualizacion.low,
+            data.ultimaActualizacion.high
+          ).toNumber();
+        }
+  
+        if (action === 'DELETE') {
+          await this.asientoService.deleteAsiento(data.idAsiento);
+        } else if (action === 'INSERT') {
+          await this.asientoService.createAsiento(data);
+        } else if (action === 'UPDATE') {
+          await this.asientoService.updateAsiento(data.idAsiento, data);
+        }
+  
+        this.logger.log(`🔄 Sincronizado asientos desde ${nodoOrigen}`);
+      } catch (error) {
+        this.logger.error(`❌ Error al sincronizar asiento:`, error);
+      }
     }
-
-    await this.applyLocalChanges(table, action, data, vectorClock);
-    this.logger.log(`🔄 Sincronizado ${table} desde ${nodoOrigen}`);
+  
+    // Aquí puedes agregar más bloques para otras tablas
   }
 
   private async isDataNewer(table: string, id: number, remoteClock: any): Promise<boolean> {
@@ -67,27 +94,8 @@ export class SyncMysqlService implements OnModuleInit {
 
     const localClock = localData.vectorClock || {};
     return Object.keys(remoteClock).every(
-      node => (remoteClock[node] || 0) >= (localClock[node] || 0)
+      node => (remoteClock[node] || 0) >= (localClock[node] || 0),
     );
-  }
-
-  private async applyLocalChanges(
-    table: string,
-    action: 'INSERT' | 'UPDATE' | 'DELETE',
-    data: any,
-    vectorClock: Record<string, number>,
-  ): Promise<void> {
-    const entity = { ...data, vectorClock };
-
-    if (table === 'asientos') {
-      if (action === 'DELETE') {
-        await this.asientoMySQLRepo.delete({ idAsiento: entity.idAsiento });
-      } else if (action === 'INSERT') {
-        await this.asientoMySQLRepo.save(entity);
-      } else {
-        await this.asientoMySQLRepo.update({ idAsiento: entity.idAsiento }, entity);
-      }
-    }
   }
 
   private async getLocalMySQLData(table: string, id: number): Promise<any> {

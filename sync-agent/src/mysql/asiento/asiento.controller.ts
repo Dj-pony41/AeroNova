@@ -35,13 +35,20 @@ export class AsientoController {
       vectorClock: updatedClock,
     };
 
-    const payload = {
+    const payload: {
+      table: string;
+      action: 'UPDATE' | 'INSERT' | 'DELETE';
+      data: any;
+      vectorClock: Record<string, number>;
+      nodoOrigen: string;
+    } = {
       table: 'asientos',
       action: 'UPDATE',
       data: finalData,
       vectorClock: updatedClock,
       nodoOrigen: currentNode,
     };
+    
 
     await this.syncService.handleSync(payload);
     this.wsClient.emitToAll('sync_data', payload);

@@ -1,13 +1,16 @@
-// src/sync/sync-mysql.module.ts
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyncGateway } from './sync/sync.gateway';
 import { SyncMysqlService } from './sync/sync-mysql.service';
 import { Asiento as MySQLAsiento } from '../mysql/asiento/entities/asiento.entity';
-import {WebSocketClient} from '../sync/websocket.client'
+import { WebSocketClient } from './websocket.client';
+import { AsientoModule } from '../mysql/asiento/asiento.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MySQLAsiento])],
+  imports: [
+    TypeOrmModule.forFeature([MySQLAsiento]),
+    forwardRef(() => AsientoModule), // ✅ Rompe el ciclo
+  ],
   providers: [SyncGateway, SyncMysqlService, WebSocketClient],
   exports: [SyncGateway, SyncMysqlService, WebSocketClient],
 })
