@@ -45,8 +45,10 @@ export class SyncMongoService implements OnModuleInit {
     });
 
     this.socket.on('sync_data', async (payload: any) => {
+      this.logger.log('📥 Evento sync_data recibido:', payload); // <== AÑADE ESTO
       await this.handleSync(payload);
     });
+    
   }
 
   // ==================== SYNC CORE ====================
