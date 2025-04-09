@@ -71,34 +71,31 @@ export class AsientoService {
     return data;
   }
 
-  async updateAsiento(id: number, dto: UpdateAsientoDto): Promise<any> {
+  async updateAsiento(id: number, updateDto: UpdateAsientoDto): Promise<Asiento> {
     const asiento = await this.asientoRepo.findOne({ where: { idAsiento: id } });
-    if (!asiento) throw new Error(`Asiento con id ${id} no encontrado`);
+    if (!asiento) {
+      throw new NotFoundException(`Asiento con id ${id} no encontrado.`);
+    }
   
-    const currentNode = process.env.NODE_ID!;
-    const baseClock = asiento.vectorClock || {
-      nodo_mysql_1: 0,
-      nodo_mysql_2: 0,
-      nodo_mongo: 0,
+    // 🔁 Fusionar correctamente el vectorClock
+    const newClock = updateDto.vectorClock || {};
+    const currentClock = asiento.vectorClock || {};
+  
+    const mergedClock = {
+      nodo_mysql_1: Math.max(newClock.nodo_mysql_1 ?? 0, currentClock.nodo_mysql_1 ?? 0),
+      nodo_mysql_2: Math.max(newClock.nodo_mysql_2 ?? 0, currentClock.nodo_mysql_2 ?? 0),
+      nodo_mongo: Math.max(newClock.nodo_mongo ?? 0, currentClock.nodo_mongo ?? 0),
     };
   
-    const updatedClock = {
-      ...baseClock,
-      [currentNode]: (baseClock[currentNode] || 0) + 1,
-    };
+    // Actualiza los campos y el reloj vectorial
+    Object.assign(asiento, updateDto);
+    asiento.vectorClock = mergedClock;
   
-    await this.asientoRepo.update(id, {
-      ...dto,
-      vectorClock: updatedClock,
-      ultimaActualizacion: dto.ultimaActualizacion ?? Date.now(),
-    });
-  
-    return {
-      ...asiento,
-      ...dto,
-      vectorClock: updatedClock,
-    };
+    return await this.asientoRepo.save(asiento);
   }
+  
+
+
 
   async createAsiento(createDto: CreateAsientoDto) {
     return this.asientoRepo.save(createDto);
