@@ -1,6 +1,6 @@
 import { Controller, Get, Put, Param, Body } from '@nestjs/common';
 import { AsientoService } from './asiento.service';
-import { CreateAsientoDto } from './dto/create-asiento.dto';
+import { UpdateAsientoDto } from './dto/update-asiento.dto';
 
 @Controller('asientos')
 export class AsientoController {
@@ -12,7 +12,7 @@ export class AsientoController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() dto: CreateAsientoDto) {
+  async update(@Param('id') id: number, @Body() dto: UpdateAsientoDto) {
     return this.asientoService.createOrUpdate(+id, dto);
   }
 }
