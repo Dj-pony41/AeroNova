@@ -1,34 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// src/mysql/transaccion/transaccion.controller.ts
+import {
+  Controller, Post, Put, Get, Param, Body, ParseIntPipe,
+} from '@nestjs/common';
 import { TransaccionService } from './transaccion.service';
 import { CreateTransaccionDto } from './dto/create-transaccion.dto';
 import { UpdateTransaccionDto } from './dto/update-transaccion.dto';
 
-@Controller('transaccion')
+@Controller('transacciones')
 export class TransaccionController {
-  constructor(private readonly transaccionService: TransaccionService) {}
+  constructor(private readonly service: TransaccionService) {}
 
   @Post()
-  create(@Body() createTransaccionDto: CreateTransaccionDto) {
-    return this.transaccionService.create(createTransaccionDto);
+  create(@Body() dto: CreateTransaccionDto) {
+    return this.service.create(dto);
+  }
+
+  @Put(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateTransaccionDto) {
+    return this.service.update(id, dto);
   }
 
   @Get()
   findAll() {
-    return this.transaccionService.findAll();
+    return this.service.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transaccionService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTransaccionDto: UpdateTransaccionDto) {
-    return this.transaccionService.update(+id, updateTransaccionDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.transaccionService.remove(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.service.findOne(id);
   }
 }

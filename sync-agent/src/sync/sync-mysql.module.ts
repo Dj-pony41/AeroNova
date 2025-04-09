@@ -6,13 +6,16 @@ import { Asiento as MySQLAsiento } from '../mysql/asiento/entities/asiento.entit
 import { WebSocketClient } from './websocket.client';
 import { AsientoModule } from '../mysql/asiento/asiento.module';
 import { PasajeroModule } from '../mysql/pasajero/pasajero.module';
+import { TransaccionModule } from '../mysql/transaccion/transaccion.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([MySQLAsiento]),
     forwardRef(() => AsientoModule),
     
-    PasajeroModule, // ✅ Rompe el ciclo
+    PasajeroModule, 
+    
+    TransaccionModule,// ✅ Rompe el ciclo
   ],
   providers: [SyncGateway, SyncMysqlService, WebSocketClient],
   exports: [SyncGateway, SyncMysqlService, WebSocketClient],

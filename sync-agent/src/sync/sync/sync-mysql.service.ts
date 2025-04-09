@@ -4,6 +4,7 @@ import { Asiento } from '../../mysql/asiento/entities/asiento.entity';
 import { Repository } from 'typeorm';
 import { AsientoService } from '../../mysql/asiento/asiento.service';
 import { PasajeroService } from 'src/mysql/pasajero/pasajero.service';
+import { TransaccionService} from 'src/mysql/transaccion/transaccion.service'
 import io from 'socket.io-client';
 
 import Long from 'long';
@@ -18,6 +19,7 @@ export class SyncMysqlService implements OnModuleInit {
     private asientoMySQLRepo: Repository<Asiento>,
     private readonly asientoService: AsientoService,
     private readonly pasajeroService: PasajeroService,
+    private readonly transaccionService: TransaccionService,
   ) {}
 
   onModuleInit() {
@@ -88,12 +90,37 @@ export class SyncMysqlService implements OnModuleInit {
     }
     if (table === 'pasajeros') {
       try {
-        await this.pasajeroService.syncUpsert(data);
+        if ('_id' in data) delete data._id;
+    
+        if (action === 'DELETE') {
+          // (Opcional) Lógica si algún día se desea borrar pasajero
+        } else if (action === 'INSERT') {
+          await this.pasajeroService.create(data);
+        } else if (action === 'UPDATE') {
+          await this.pasajeroService.update(data.pasaporte, data);
+        }
+    
         this.logger.log(`🔄 Sincronizado pasajero desde ${nodoOrigen}`);
       } catch (err) {
         this.logger.error('❌ Error sincronizando pasajero:', err);
       }
     }
+    if (table === 'transacciones') {
+      if ('_id' in data) delete data._id;
+      data.vectorClock = vectorClock;
+    
+      if (action === 'DELETE') {
+        // implementar si deseas eliminar
+      } else if (action === 'INSERT') {
+        await this.transaccionService.create(data);
+      } else if (action === 'UPDATE') {
+        await this.transaccionService.update(data.IdTransaccion, data);
+      }
+      this.logger.log(`🔄 Sincronizado transacciones desde ${nodoOrigen}`);
+    }
+    
+
+    
   
     // Aquí puedes agregar más bloques para otras tablas
   }

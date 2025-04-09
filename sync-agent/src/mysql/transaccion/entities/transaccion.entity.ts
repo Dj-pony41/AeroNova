@@ -1,33 +1,39 @@
+// src/mysql/transaccion/entities/transaccion.entity.ts
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Asiento } from 'src/mysql/asiento/entities/asiento.entity';
 import { Pasajero } from 'src/mysql/pasajero/entities/pasajero.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
-
-@Entity()
+@Entity({ name: 'transaccion' })
 export class Transaccion {
-  @PrimaryGeneratedColumn()
-  idTransaccion: number;
+  @PrimaryColumn()
+  IdTransaccion: number;
 
-  @Column({ length: 15 })
-  operacion: string; // 'Reserva' | 'Venta' | 'Anulacion' | 'Devolucion'
+  @Column()
+  IdAsiento: number;
+
+  @Column()
+  Pasaporte: number;
+
+  @Column()
+  Operacion: 'Devolucion' | 'Anulacion' | 'Venta' | 'Reserva';
 
   @Column({ type: 'bigint' })
-  fechaOperacion: number;
+  FechaOperacion: number;
 
-  @Column({ length: 30 })
-  origenTransaccion: string;
-// En la entidad MySQL (corrección)
-  @Column({ type: 'json', nullable: true }) // ← Cambiado de 'text' a 'json'
-  vectorClock: Record<string, number>; // Tipo correcto para JSON
+  @Column()
+  OrigenTransaccion: string;
 
-  @Column({ nullable: true })
-  servidorConectado: number;
+  @Column({ type: 'json' })
+  VectorClock: Record<string, number>;
 
-  // Relación: Muchas Transacciones pertenecen a un Asiento
-  @ManyToOne(() => Asiento, (asiento) => asiento.transacciones)
+  @Column()
+  ServidorConectado: number;
+
+  @ManyToOne(() => Asiento)
+  @JoinColumn({ name: 'IdAsiento' })
   asiento: Asiento;
 
-  // Relación: Muchas Transacciones pertenecen a un Pasajero
-  @ManyToOne(() => Pasajero, (pasajero) => pasajero.transacciones)
+  @ManyToOne(() => Pasajero)
+  @JoinColumn({ name: 'Pasaporte' })
   pasajero: Pasajero;
 }

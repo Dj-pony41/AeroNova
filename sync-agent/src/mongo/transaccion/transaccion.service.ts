@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MongoTransaccion } from './entities/transaccion.entity';
 import { CreateTransaccionDto } from './dto/create-transaccion.dto';
 import { UpdateTransaccionDto } from './dto/update-transaccion.dto';
 
 @Injectable()
 export class TransaccionService {
-  create(createTransaccionDto: CreateTransaccionDto) {
-    return 'This action adds a new transaccion';
+  constructor(
+    @InjectModel(MongoTransaccion.name)
+    private readonly transaccionModel: Model<MongoTransaccion>,
+  ) {}
+
+  async create(dto: CreateTransaccionDto): Promise<MongoTransaccion> {
+    return this.transaccionModel.create(dto);
   }
 
-  findAll() {
-    return `This action returns all transaccion`;
+  async update(id: number, dto: UpdateTransaccionDto): Promise<MongoTransaccion | null> {
+    return this.transaccionModel.findOneAndUpdate({ IdTransaccion: id }, dto, {
+      new: true,
+      upsert: true,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaccion`;
+  async findAll(): Promise<MongoTransaccion[]> {
+    return this.transaccionModel.find().lean();
   }
 
-  update(id: number, updateTransaccionDto: UpdateTransaccionDto) {
-    return `This action updates a #${id} transaccion`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} transaccion`;
+  async findOne(id: number): Promise<MongoTransaccion | null> {
+    return this.transaccionModel.findOne({ IdTransaccion: id }).lean();
   }
 }

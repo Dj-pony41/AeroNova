@@ -2,6 +2,11 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import io from 'socket.io-client';
 import { AsientoService } from 'src/mongo/asiento/asiento.service';
 import { PasajeroService } from 'src/mongo/pasajero/pasajero.service';
+import { TransaccionService } from 'src/mongo/transaccion/transaccion.service';
+
+import Long from 'long';
+
+
 
 
 @Injectable()
@@ -12,6 +17,7 @@ export class SyncMongoService implements OnModuleInit {
   constructor(
     private readonly asientoService: AsientoService,
     private readonly pasajeroService: PasajeroService,
+    private readonly transaccionService: TransaccionService,
   ) {}
 
   onModuleInit() {
@@ -70,11 +76,47 @@ export class SyncMongoService implements OnModuleInit {
 
       if (table === 'pasajeros') {
         try {
-          const { pasaporte, ...rest } = data;
-          await this.pasajeroService.createOrUpdate(pasaporte, rest);
-          this.logger.log(`🧾 Pasajero ${pasaporte} sincronizado desde ${nodoOrigen}`);
+          if ('_id' in data) delete data._id;
+      
+          if (action === 'INSERT') {
+            await this.pasajeroService.create(data);
+          } else if (action === 'UPDATE') {
+            await this.pasajeroService.update(data.Pasaporte, data);
+          }
+      
+          this.logger.log(`🧾 Pasajero ${data.Pasaporte} sincronizado desde ${nodoOrigen}`);
         } catch (error) {
           this.logger.error(`❌ Error al sincronizar pasajero:`, error);
+        }
+      }
+      
+
+      if (table === 'transacciones') {
+        try {
+          if ('_id' in data) delete data._id;
+      
+          // Si viene desde Mongo, puede tener campos Long
+          if (typeof data.FechaOperacion === 'object' && 'low' in data.FechaOperacion && 'high' in data.FechaOperacion) {
+            data.FechaOperacion = Long.fromBits(
+              data.FechaOperacion.low,
+              data.FechaOperacion.high
+            ).toNumber();
+          }
+      
+          data.VectorClock = vectorClock;
+      
+          if (action === 'DELETE') {
+            // Eliminar por IdTransaccion si lo deseas
+            // await this.transaccionService.delete(data.IdTransaccion);
+          } else if (action === 'INSERT') {
+            await this.transaccionService.create(data);
+          } else if (action === 'UPDATE') {
+            await this.transaccionService.update(data.IdTransaccion, data);
+          }
+      
+          this.logger.log(`🔄 Sincronizado transacción desde ${nodoOrigen}`);
+        } catch (err) {
+          this.logger.error('❌ Error sincronizando transacción:', err);
         }
       }
 

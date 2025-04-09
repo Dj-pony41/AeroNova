@@ -13,6 +13,7 @@ import { RutaModule } from './ruta/ruta.module';
 import { TransaccionModule } from './transaccion/transaccion.module';
 import { VueloModule } from './vuelo/vuelo.module';
 
+
 @Module({
   imports: [
     // Configuración global de TypeORM usando forRootAsync junto con ConfigService:

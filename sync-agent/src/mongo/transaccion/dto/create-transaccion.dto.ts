@@ -1,35 +1,34 @@
-import { IsInt, IsString, IsIn, IsNotEmpty, IsOptional, IsObject, ValidateNested } from 'class-validator';
+import {
+  IsInt,
+  IsString,
+  IsIn,
+  IsObject,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateTransaccionDto {
   @IsInt()
-  @IsNotEmpty()
-  idTransaccion: number;
+  IdTransaccion: number;
 
   @IsInt()
-  @IsNotEmpty()
-  asientoId: number; // ID del Asiento
+  IdAsiento: number;
 
   @IsInt()
-  @IsNotEmpty()
-  pasaporte: number; // ID del Pasajero
+  Pasaporte: number;
 
   @IsString()
-  @IsIn(['Reserva', 'Venta', 'Anulacion', 'Devolucion'])
-  operacion: string;
+  @IsIn(['Devolucion', 'Anulacion', 'Venta', 'Reserva'])
+  Operacion: string;
 
   @IsInt()
-  @IsNotEmpty()
-  fechaOperacion: number; // Timestamp
+  FechaOperacion: number;
 
   @IsString()
-  @IsNotEmpty()
-  origenTransaccion: string;
+  OrigenTransaccion: string;
 
-  @IsOptional()
   @IsObject()
-  @ValidateNested() // Si usas class-validator
-  vectorClock?: Record<string, number>;
+  VectorClock: Record<string, number>;
 
   @IsInt()
-  servidorConectado?: number;
+  ServidorConectado: number;
 }

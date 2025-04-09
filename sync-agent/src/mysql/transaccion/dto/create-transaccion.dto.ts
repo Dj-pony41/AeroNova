@@ -1,35 +1,38 @@
-import { IsInt, IsString, IsIn, IsNotEmpty, IsOptional, IsObject, ValidateNested } from 'class-validator';
+// src/mysql/transaccion/dto/create-transaccion.ts
+import {
+  IsInt,
+  IsNotEmpty,
+  IsIn,
+  IsString,
+  IsObject,
+} from 'class-validator';
 
 export class CreateTransaccionDto {
   @IsInt()
   @IsNotEmpty()
-  idTransaccion: number;
+  IdTransaccion: number;
 
   @IsInt()
   @IsNotEmpty()
-  asientoId: number; // ID del Asiento
+  IdAsiento: number;
 
   @IsInt()
   @IsNotEmpty()
-  pasaporte: number; // ID del Pasajero
+  Pasaporte: number;
+
+  @IsIn(['Devolucion', 'Anulacion', 'Venta', 'Reserva'])
+  @IsString()
+  Operacion: 'Devolucion' | 'Anulacion' | 'Venta' | 'Reserva'; // ✅ Tipo literal
+
+  @IsInt()
+  FechaOperacion: number;
 
   @IsString()
-  @IsIn(['Reserva', 'Venta', 'Anulacion', 'Devolucion'])
-  operacion: string;
+  OrigenTransaccion: string;
 
-  @IsInt()
-  @IsNotEmpty()
-  fechaOperacion: number; // Timestamp
-
-  @IsString()
-  @IsNotEmpty()
-  origenTransaccion: string;
-
-  @IsOptional()
   @IsObject()
-  @ValidateNested() // Si usas class-validator
-  vectorClock?: Record<string, number>;
+  VectorClock: Record<string, number>;
 
   @IsInt()
-  servidorConectado?: number;
+  ServidorConectado: number;
 }
