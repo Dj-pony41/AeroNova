@@ -1,12 +1,12 @@
-// src/mongo/pasajero/dto/update-pasajero.dto.ts
-import { IsInt, IsOptional, IsString } from 'class-validator';
+// update-pasajero.dto.ts
+import { IsOptional, IsInt, IsString } from 'class-validator';
 
 export class UpdatePasajeroDto {
   @IsOptional()
   @IsInt()
-  pasaporte?: number;
+  Pasaporte?: number;
 
   @IsOptional()
   @IsString()
-  nombreCompleto?: string;
+  NombreCompleto?: string;
 }

@@ -1,8 +1,8 @@
-// src/mongo/pasajero/pasajero.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MongoPasajero } from './entities/pasajero.entity';
+import { CreatePasajeroDto } from './dto/create-pasajero.dto';
 import { UpdatePasajeroDto } from './dto/update-pasajero.dto';
 import { WebSocketClient } from 'src/sync/websocket.client';
 
@@ -10,42 +10,43 @@ import { WebSocketClient } from 'src/sync/websocket.client';
 export class PasajeroService {
   constructor(
     @InjectModel(MongoPasajero.name)
-    private pasajeroModel: Model<MongoPasajero>,
-    private wsClient: WebSocketClient,
+    private readonly pasajeroModel: Model<MongoPasajero>,
+    private readonly wsClient: WebSocketClient,
   ) {}
 
-  async findAll() {
+  async findAll(): Promise<MongoPasajero[]> {
     return this.pasajeroModel.find().lean();
   }
 
-  async findByPasaporte(pasaporte: number): Promise<MongoPasajero | null> {
-    return this.pasajeroModel.findOne({ pasaporte }).lean();
+  async findOne(pasaporte: number): Promise<MongoPasajero | null> {
+    return this.pasajeroModel.findOne({ Pasaporte: pasaporte }).lean();
   }
 
-  async createOrUpdate(pasaporte: number, dto: UpdatePasajeroDto): Promise<MongoPasajero> {
-    dto.pasaporte = pasaporte;
+  async create(dto: CreatePasajeroDto) {
+    const creado = await this.pasajeroModel.create(dto);
 
-    const existing = await this.pasajeroModel.findOne({ pasaporte }).lean();
+    this.wsClient.emitToAll('sync_data', {
+      table: 'pasajeros',
+      action: 'INSERT',
+      data: dto,
+      vectorClock: {}, // Lo puedes generar si es necesario
+      nodoOrigen: process.env.NODE_ID,
+    });
 
-    const pasajero = {
-      ...existing,
-      ...dto,
-    };
+    return creado;
+  }
 
-    await this.pasajeroModel.updateOne(
-      { pasaporte },
-      { $set: pasajero },
-      { upsert: true },
-    );
+  async update(pasaporte: number, dto: UpdatePasajeroDto) {
+    await this.pasajeroModel.updateOne({ Pasaporte: pasaporte }, { $set: dto });
 
     this.wsClient.emitToAll('sync_data', {
       table: 'pasajeros',
       action: 'UPDATE',
-      data: pasajero,
-      vectorClock: {}, // No usamos vector en esta entidad
+      data: { ...dto, Pasaporte: pasaporte },
+      vectorClock: {}, // Lo puedes generar si es necesario
       nodoOrigen: process.env.NODE_ID,
     });
 
-    return pasajero as any;
+    return this.findOne(pasaporte);
   }
 }

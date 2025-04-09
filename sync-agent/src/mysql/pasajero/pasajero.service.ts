@@ -4,47 +4,40 @@ import { Repository } from 'typeorm';
 import { Pasajero } from './entities/pasajero.entity';
 import { CreatePasajeroDto } from './dto/create-pasajero.dto';
 import { UpdatePasajeroDto } from './dto/update-pasajero.dto';
-import { WebSocketClient } from 'src/sync/websocket.client';
 
 @Injectable()
 export class PasajeroService {
   constructor(
     @InjectRepository(Pasajero)
     private readonly pasajeroRepo: Repository<Pasajero>,
-    private readonly wsClient: WebSocketClient,
   ) {}
 
-  async findAll() {
+  async findAll(): Promise<Pasajero[]> {
     return this.pasajeroRepo.find();
   }
 
-  async findByPasaporte(pasaporte: number) {
+  async findOne(pasaporte: number): Promise<Pasajero | null> {
+    return await this.pasajeroRepo.findOneBy({ pasaporte });
+  }
+
+  async create(dto: CreatePasajeroDto): Promise<Pasajero> {
+    const existe = await this.pasajeroRepo.findOneBy({ pasaporte: dto.pasaporte });
+    if (existe) {
+      throw new Error(`El pasajero con pasaporte ${dto.pasaporte} ya existe`);
+    }
+
+    const pasajero = this.pasajeroRepo.create(dto);
+    return this.pasajeroRepo.save(pasajero);
+  }
+
+  async update(pasaporte: number, dto: UpdatePasajeroDto): Promise<Pasajero> {
     const pasajero = await this.pasajeroRepo.findOneBy({ pasaporte });
+
     if (!pasajero) {
       throw new NotFoundException(`Pasajero con pasaporte ${pasaporte} no encontrado`);
     }
-    return pasajero;
-  }
 
-  async upsert(pasaporte: number, dto: CreatePasajeroDto): Promise<Pasajero> {
-    const existing = await this.pasajeroRepo.findOneBy({ pasaporte });
-
-    const pasajero = this.pasajeroRepo.create({ ...existing, ...dto });
-
-    await this.pasajeroRepo.save(pasajero);
-
-    this.wsClient.emitToAll('sync_data', {
-      table: 'pasajeros',
-      action: existing ? 'UPDATE' : 'INSERT',
-      data: pasajero,
-      vectorClock: {}, // No usamos vectorClock aquí
-      nodoOrigen: process.env.NODE_ID,
-    });
-
-    return pasajero;
-  }
-
-  async syncUpsert(data: any) {
-    await this.pasajeroRepo.save(data);
+    Object.assign(pasajero, dto);
+    return this.pasajeroRepo.save(pasajero);
   }
 }

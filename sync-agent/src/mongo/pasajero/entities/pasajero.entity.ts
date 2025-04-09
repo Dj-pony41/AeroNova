@@ -1,16 +1,13 @@
-// src/mongo/pasajero/entities/pasajero.entity.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type MongoPasajeroDocument = MongoPasajero & Document;
-
-@Schema({ collection: 'pasajeros' }) // 👈 Usamos colección existente
-export class MongoPasajero {
+@Schema({ collection: 'pasajeros' }) // ✅ usamos colección existente
+export class MongoPasajero extends Document {
   @Prop({ required: true })
-  pasaporte: number;
+  Pasaporte: number; // ✅ mantener mayúsculas
 
   @Prop({ required: true })
-  nombreCompleto: string;
+  NombreCompleto: string;
 }
 
 export const PasajeroSchema = SchemaFactory.createForClass(MongoPasajero);
