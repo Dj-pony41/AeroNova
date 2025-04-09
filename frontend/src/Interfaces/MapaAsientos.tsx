@@ -1,3 +1,4 @@
+import '../Styles/MapaAsientosStyle.css'
 import { useState } from 'react'
 
 interface Props {
@@ -5,7 +6,7 @@ interface Props {
 }
 
 const filas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-const columnas = 29
+const columnas = 40
 
 const MapaAsientos = ({ totalAsientos }: Props) => {
   const [asientosSeleccionados, setAsientosSeleccionados] = useState<number[]>([])
