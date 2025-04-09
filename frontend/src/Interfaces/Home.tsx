@@ -11,6 +11,27 @@ import servidorIcon from '../assets/servidor.png'
 import DevolucionModal from '../utils/DevolucionModal'
 import SeleccionAsientoModal from '../utils/SeleccionAsientoModal'
 
+import paises from '../assets/paises.json' // Asegúrate de tenerlo en JSON
+import { paisesConZona } from '../utils/paisesConZona.ts';
+// Home.tsx
+
+function obtenerRegion(pais: string): "mysql" | "mysql2" | "mongo" {
+    const norteAmerica = ["Canadá", "Estados Unidos", "México"];
+    const centroAmerica = [
+        "Guatemala", "Honduras", "El Salvador", "Nicaragua",
+        "Costa Rica", "Panamá"
+    ];
+    const surAmerica = [
+        "Colombia", "Venezuela", "Ecuador", "Perú", "Bolivia",
+        "Chile", "Argentina", "Uruguay", "Paraguay", "Brasil"
+    ];
+
+    if (norteAmerica.includes(pais)) return "mongo";
+    if (centroAmerica.includes(pais)) return "mysql2";
+    if (surAmerica.includes(pais)) return "mysql";
+
+    return "mysql"; // por defecto
+}
 
 type AsientoCompra = {
     id: string;
@@ -20,18 +41,27 @@ type AsientoCompra = {
     estado: 'Vendido' | 'Reservado';
     enProcesoDeDevolucion?: boolean; // ← nueva propiedad
 };
-
+interface PaisCiudad {
+    pais: string;
+    ciudad: string;
+    lat: number;
+    lng: number;
+}
 
 function Home() {
     const [currentTime, setCurrentTime] = useState("")
     const [location, setLocation] = useState("Bogotá, Colombia")
     const [selectedFlight, setSelectedFlight] = useState("B-101")
+    const [paisesCiudades, setPaisesCiudades] = useState<PaisCiudad[]>([]);
 
     const [asientosComprados, setAsientosComprados] = useState<AsientoCompra[]>([]);
 
     const [asientoADevolver, setAsientoADevolver] = useState<AsientoCompra | null>(null);
 
     const [devolucionModalVisible, setDevolucionModalVisible] = useState(false);
+
+    const [servidorActivo, setServidorActivo] = useState<"mysql" | "mysql2" | "mongo">("mysql");
+
 
     const avionRef = useRef<any>(null);
     const actualizarEstadoTemporal = (id: string, nuevoEstado: string) => {
@@ -43,7 +73,9 @@ function Home() {
     const [modalCompraVisible, setModalCompraVisible] = useState(false);
     const [asientoAComprar, setAsientoAComprar] = useState<AsientoCompra | null>(null);
 
-
+    useEffect(() => {
+        setPaisesCiudades(paises);
+    }, [])
 
     const flights = [
         { code: "B-101", route: "Ucrania(Kiev) - Bolivia(Cochabamba) 18:55 20/Abr/2024", aircraft: "A380" },
@@ -55,24 +87,38 @@ function Home() {
     ]
 
     useEffect(() => {
-        const updateTime = () => {
-            const now = new Date()
-            const options: Intl.DateTimeFormatOptions = {
+        const actualizarHora = () => {
+            const seleccionado = paisesConZona.find(
+                p => `${p.ciudad}, ${p.pais}` === location
+            );
+            if (!seleccionado) return;
+
+            const now = new Date();
+            const horaLocal = now.toLocaleString("es-CO", {
+                timeZone: seleccionado.zona,
                 weekday: "short",
                 day: "2-digit",
                 month: "short",
                 hour: "2-digit",
                 minute: "2-digit",
                 second: "2-digit",
-                hour12: true,
-            }
-            setCurrentTime(now.toLocaleString("es-CO", options))
-        }
+                hour12: true
+            });
 
-        updateTime()
-        const interval = setInterval(updateTime, 1000)
-        return () => clearInterval(interval)
-    }, [])
+            setCurrentTime(horaLocal);
+        };
+
+        actualizarHora();
+        const interval = setInterval(actualizarHora, 1000);
+        return () => clearInterval(interval);
+    }, [location]);
+
+    useEffect(() => {
+        const pais = location.split(", ")[1]; // Extrae el país de "Ciudad, País"
+        const region = obtenerRegion(pais);
+        setServidorActivo(region);
+    }, [location]);
+
 
     const registrarCompra = (id: string, pasajero: string, pasaporte: string, precio: number) => {
         setAsientosComprados((prev) => [...prev, { id, pasajero, pasaporte, precio, estado: 'Vendido' }]);
@@ -95,28 +141,30 @@ function Home() {
                 <div className="location">
                     <label>Estoy comprando desde</label>
                     <select value={location} onChange={(e) => setLocation(e.target.value)}>
-                        <option>Bogotá, Colombia</option>
-                        <option>Medellín, Colombia</option>
-                        <option>Cali, Colombia</option>
-                        <option>Cartagena, Colombia</option>
+                        {paisesConZona.map((p, i) => (
+                            <option key={i} value={`${p.ciudad}, ${p.pais}`}>
+                                {p.ciudad}, {p.pais}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
                 {/* Servidores */}
                 <div className="servers">
-                    <div className="server-option active">
+                    <div className={`server-option ${servidorActivo === "mysql" ? "active" : ""}`}>
                         <img src={servidorIcon} alt="MySQL" />
                         <span>MySQL</span>
                     </div>
-                    <div className="server-option">
+                    <div className={`server-option ${servidorActivo === "mysql2" ? "active" : ""}`}>
                         <img src={servidorIcon} alt="MySQL2" />
                         <span>MySQL2</span>
                     </div>
-                    <div className="server-option">
+                    <div className={`server-option ${servidorActivo === "mongo" ? "active" : ""}`}>
                         <img src={servidorIcon} alt="Mongo" />
                         <span>Mongo</span>
                     </div>
                 </div>
+
                 <div className="datetime">
                     <label>Fecha y hora actual</label>
                     <p>{currentTime}</p>

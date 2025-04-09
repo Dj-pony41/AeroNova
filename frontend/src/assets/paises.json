@@ -1,0 +1,13 @@
+[
+    { "pais": "Canadá", "ciudad": "Ottawa", "lat": 45.4215, "lng": -75.6972 },
+    { "pais": "Estados Unidos", "ciudad": "Washington D.C.", "lat": 38.9072, "lng": -77.0369 },
+    { "pais": "México", "ciudad": "Ciudad de México", "lat": 19.4326, "lng": -99.1332 },
+    { "pais": "Guatemala", "ciudad": "Ciudad de Guatemala", "lat": 14.6349, "lng": -90.5069 },
+    { "pais": "Honduras", "ciudad": "Tegucigalpa", "lat": 14.0723, "lng": -87.1921 },
+    { "pais": "El Salvador", "ciudad": "San Salvador", "lat": 13.6929, "lng": -89.2182 },
+    { "pais": "Nicaragua", "ciudad": "Managua", "lat": 12.1140, "lng": -86.2362 },
+    { "pais": "Costa Rica", "ciudad": "San José", "lat": 9.9281, "lng": -84.0907 },
+    { "pais": "Panamá", "ciudad": "Ciudad de Panamá", "lat": 8.9824, "lng": -79.5199 },
+    { "pais": "Colombia", "ciudad": "Bogotá", "lat": 4.7110, "lng": -74.0721 }
+  ]
+  
