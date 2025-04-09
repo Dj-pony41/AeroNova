@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { AsientoService } from './asiento.service';
 import { CreateAsientoDto } from './dto/create-asiento.dto';
 import { UpdateAsientoDto } from './dto/update-asiento.dto';
@@ -16,4 +16,10 @@ export class AsientoController {
   async findAll() {
     return this.asientoService.findAll();
   }
+
+  @Put(':id')
+async update(@Param('id') id: number, @Body() dto: UpdateAsientoDto) {
+  return this.asientoService.update(id, dto);
+}
+
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Vuelo } from '../../vuelo/entities/vuelo.entity';
 import { Transaccion } from 'src/mysql/transaccion/entities/transaccion.entity';
 import { HistorialAsiento } from 'src/mysql/historial-asiento/entities/historial-asiento.entity';
@@ -25,8 +25,10 @@ export class Asiento {
   vectorClock: Record<string, number>; // Tipo correcto para JSON
 
   // Relación: Muchos Asientos pertenecen a un Vuelo
-  @ManyToOne(() => Vuelo, (vuelo) => vuelo.asientos)
+  @ManyToOne(() => Vuelo, vuelo => vuelo.asientos)
+  @JoinColumn({ name: 'IdVuelo' }) // 👈 importante
   vuelo: Vuelo;
+  
 
   // Relación: Un Asiento puede tener muchas Transacciones
   @OneToMany(() => Transaccion, (transaccion) => transaccion.pasajero)

@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Asiento } from './entities/asiento.entity';
 import { CreateAsientoDto } from './dto/create-asiento.dto';
 import { UpdateAsientoDto } from './dto/update-asiento.dto';
 import { WebSocketClient } from '../../sync/websocket.client';
+
+import { appendTimezoneToEpoch } from 'src/common/utils/time.util';
 
 @Injectable()
 export class AsientoService {
@@ -46,5 +48,26 @@ export class AsientoService {
     });
 
     return asiento;
+  }
+
+  async update(id: number, dto: UpdateAsientoDto) {
+    const asiento = await this.asientoRepo.findOneBy({ idAsiento: id });
+    if (!asiento) {
+      throw new NotFoundException(`Asiento ${id} no encontrado`);
+    }
+  
+    const zonaHoraria = Number(process.env.TIMEZONE_OFFSET || 0);
+  
+    const data = {
+      ...asiento,
+      ...dto,
+      ultimaActualizacion: appendTimezoneToEpoch(
+        dto.ultimaActualizacion ?? Date.now(),
+        zonaHoraria
+      ),
+    };
+  
+    await this.asientoRepo.update({ idAsiento: id }, data);
+    return data;
   }
 }
