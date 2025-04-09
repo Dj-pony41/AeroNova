@@ -99,6 +99,13 @@ export class AsientoService {
       vectorClock: updatedClock,
     };
   }
+
+  async createAsiento(createDto: CreateAsientoDto) {
+    return this.asientoRepo.save(createDto);
+  }
   
+  async deleteAsiento(id: number) {
+    return this.asientoRepo.delete({ idAsiento: id });
+  }
   
 }
