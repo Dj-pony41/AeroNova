@@ -71,26 +71,34 @@ export class AsientoService {
     return data;
   }
 
-  async updateAsiento(id: number, updateDto: UpdateAsientoDto): Promise<Asiento> {
-    // Encuentra el asiento existente
+  async updateAsiento(id: number, dto: UpdateAsientoDto): Promise<any> {
     const asiento = await this.asientoRepo.findOne({ where: { idAsiento: id } });
-    if (!asiento) {
-      throw new NotFoundException(`Asiento con id ${id} no encontrado.`);
-    }
-    
-    // Actualiza los campos; por ejemplo, puedes usar Object.assign:
-    Object.assign(asiento, updateDto);
-    
-    // Guarda el resultado
-    const updated = await this.asientoRepo.save(asiento);
-    return updated;
-  }
-  async createAsiento(createDto: CreateAsientoDto) {
-    return this.asientoRepo.save(createDto);
+    if (!asiento) throw new Error(`Asiento con id ${id} no encontrado`);
+  
+    const currentNode = process.env.NODE_ID!;
+    const baseClock = asiento.vectorClock || {
+      nodo_mysql_1: 0,
+      nodo_mysql_2: 0,
+      nodo_mongo: 0,
+    };
+  
+    const updatedClock = {
+      ...baseClock,
+      [currentNode]: (baseClock[currentNode] || 0) + 1,
+    };
+  
+    await this.asientoRepo.update(id, {
+      ...dto,
+      vectorClock: updatedClock,
+      ultimaActualizacion: dto.ultimaActualizacion ?? Date.now(),
+    });
+  
+    return {
+      ...asiento,
+      ...dto,
+      vectorClock: updatedClock,
+    };
   }
   
-  async deleteAsiento(id: number) {
-    return this.asientoRepo.delete({ idAsiento: id });
-  }
   
 }
